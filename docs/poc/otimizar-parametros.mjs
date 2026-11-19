@@ -2,6 +2,7 @@
 // Busca parâmetros que melhorem o resultado simulado sem violar as regras de frota (guidelines 6.4):
 // R1, equipes usadas <= disponíveis; R2, km total <= km da referência simulada e cada rota <= limite.
 // Cada execução parte do melhor resultado já gravado em arquivoSimulacao e tenta superá-lo.
+// combinacoes-testadas.json guarda o que já foi simulado, para nenhuma execução repetir combinações.
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -95,20 +96,38 @@ const mulberry32 = (semente) => () => {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 };
 
-const vizinho = (p, rnd) => {
+// Muda de 1 a `raio` parâmetros; com raio maior, cada passo também pode pular mais de uma posição.
+const vizinho = (p, rnd, raio) => {
   const q = { ...p };
   const dims = Object.keys(ESPACO);
-  const mudar = 1 + Math.floor(rnd() * 2);
+  const mudar = 1 + Math.floor(rnd() * raio);
   for (let i = 0; i < mudar; i++) {
     const d = dims[Math.floor(rnd() * dims.length)];
     const vals = ESPACO[d];
-    const atual = vals.indexOf(q[d]);
-    const passo = rnd() < 0.5 ? -1 : 1;
-    q[d] = vals[Math.min(vals.length - 1, Math.max(0, (atual < 0 ? 0 : atual) + passo))];
+    const atual = Math.max(0, vals.indexOf(q[d]));
+    const tamanho = 1 + Math.floor(rnd() * Math.min(raio, vals.length - 1));
+    let destino = atual + (rnd() < 0.5 ? -tamanho : tamanho);
+    if (destino < 0 || destino >= vals.length) destino = atual + (destino < 0 ? tamanho : -tamanho);
+    q[d] = vals[Math.min(vals.length - 1, Math.max(0, destino))];
   }
   return q;
 };
 const aleatorio = (rnd) => Object.fromEntries(Object.entries(ESPACO).map(([k, v]) => [k, v[Math.floor(rnd() * v.length)]]));
+
+const soVencida = (k) => k === "horasSoftVencida" || k === "multaVencidaHora";
+export const TAMANHO_ESPACO = Object.keys(ESPACO)
+  .filter((k) => !soVencida(k) && k !== "janelaVencidaCorrigida")
+  .reduce((a, k) => a * ESPACO[k].length, 1) * (1 + ESPACO.horasSoftVencida.length * ESPACO.multaVencidaHora.length);
+
+// Memória das combinações já simuladas, por lote: chave -> [atendidas, vencidas, km, equipes, regrasOk].
+const lerMemoria = (arquivo) => (fs.existsSync(arquivo) ? JSON.parse(fs.readFileSync(arquivo, "utf8")) : {});
+const daChave = (k, base) => {
+  const v = k.split("|");
+  return Object.fromEntries(Object.keys(ESPACO).map((d, i) => [d, v[i] === "-" ? base[d] : JSON.parse(v[i])]));
+};
+const daMemoria = (k, v, base) => ({
+  parametros: daChave(k, base), atendidas: v[0], vencidasAtendidas: v[1], kmTotal: v[2], veiculosUsados: v[3], regras: { ok: v[4] === 1 },
+});
 
 // Acrescenta a execução ao histórico (só agregados), mais recente por último.
 const registrarHistorico = (arquivoHistorico, entrada) => {
@@ -123,6 +142,7 @@ export const otimizar = async ({
   dataDir, arquivos, arquivoSimulacao, avaliacoes = 120, semente = Date.now() % 1e9, aoProgresso = () => {},
   dia, origem = "linha de comando",
   arquivoHistorico = path.join(path.dirname(arquivoSimulacao), "historico-simulacoes.json"),
+  arquivoMemoria = path.join(path.dirname(arquivoSimulacao), "combinacoes-testadas.json"),
 }) => {
   const sim = criarSimulador(dataDir, arquivos);
   const doc = JSON.parse(fs.readFileSync(arquivoSimulacao, "utf8"));
@@ -139,32 +159,63 @@ export const otimizar = async ({
   };
 
   const rnd = mulberry32(semente);
+  const memoria = lerMemoria(arquivoMemoria);
+  const conhecidos = (memoria[sim.cenario] ??= {});
   const vistos = new Map();
   const avaliar = (p) => {
     const k = chave(p);
-    if (!vistos.has(k)) vistos.set(k, { parametros: p, ...sim.simular(paraSimulador(p)) });
+    if (!vistos.has(k)) {
+      const r = { parametros: p, ...sim.simular(paraSimulador(p)) };
+      vistos.set(k, r);
+      conhecidos[k] = [r.atendidas, r.vencidasAtendidas, Math.round(r.kmTotal * 10) / 10, r.veiculosUsados, r.regras.ok ? 1 : 0];
+    }
     return vistos.get(k);
   };
+  const viaveisConhecidos = () => Object.entries(conhecidos)
+    .filter(([, v]) => v[4] === 1)
+    .map(([k, v]) => daMemoria(k, v, base))
+    .sort((a, b) => (melhorQue(a, b) ? -1 : 1));
 
   const referencia = avaliar(base);
   let melhor = referencia.regras.ok ? referencia : null;
-  if (anterior?.melhor?.parametros) {
-    const r = avaliar(anterior.melhor.parametros);
+  for (const p of [anterior?.melhor?.parametros, viaveisConhecidos()[0]?.parametros].filter(Boolean)) {
+    const r = avaliar(p);
     if (r.regras.ok && melhorQue(r, melhor)) melhor = r;
   }
   const melhorInicial = melhor;
   const inicioRodada = Date.now();
   let melhorDaRodada = null;
 
+  // Quanto mais rodadas seguidas sem melhora, mais longe a busca vai.
+  const historicoAnterior = anterior?.historico ?? [];
+  let estagnacao = 0;
+  for (let i = historicoAnterior.length - 1; i >= 0 && !historicoAnterior[i].melhorou; i--) estagnacao++;
+  const raio = Math.min(4, 2 + estagnacao);
+  const fracaoAleatoria = Math.min(0.6, 0.3 + 0.1 * estagnacao);
+  const partidas = viaveisConhecidos().slice(0, 6).map((r) => r.parametros);
+  const escolherPartida = () => (rnd() < 0.5 || partidas.length < 2 ? melhor?.parametros ?? base : partidas[1 + Math.floor(rnd() * (partidas.length - 1))]);
+  const novos = new Set();
+  const gerarNovo = () => {
+    for (let t = 0; t < 300; t++) {
+      const c = rnd() < fracaoAleatoria ? aleatorio(rnd) : vizinho(escolherPartida(), rnd, raio);
+      if (!(chave(c) in conhecidos)) return c;
+    }
+    return null;
+  };
+
   for (let i = 0; i < avaliacoes; i++) {
-    const partida = melhor?.parametros ?? base;
-    const candidato = rnd() < 0.7 ? vizinho(partida, rnd) : aleatorio(rnd);
+    const candidato = gerarNovo();
+    if (!candidato) break;
     const r = avaliar(candidato);
+    novos.add(r);
     if (r.regras.ok && melhorQue(r, melhor)) melhor = r;
-    if (r.regras.ok && r !== melhorInicial && melhorQue(r, melhorDaRodada)) melhorDaRodada = r;
+    if (r.regras.ok && melhorQue(r, melhorDaRodada)) melhorDaRodada = r;
     aoProgresso({ feitas: i + 1, total: avaliacoes, melhor: melhor && { atendidas: melhor.atendidas, vencidas: melhor.vencidasAtendidas, km: melhor.kmTotal } });
     await new Promise((ok) => setImmediate(ok));
   }
+  fs.writeFileSync(arquivoMemoria, JSON.stringify(memoria) + "\n", "utf8");
+  const estrategia = { estagnacao, raio, fracaoAleatoria: Math.round(fracaoAleatoria * 100) / 100, partidas: Math.max(1, partidas.length) };
+  const cobertura = { testadas: Object.keys(conhecidos).length, espaco: TAMANHO_ESPACO };
 
   const resumo = (r) => ({
     parametros: r.parametros,
@@ -175,9 +226,10 @@ export const otimizar = async ({
     veiculosUsados: r.veiculosUsados,
     regrasOk: r.regras.ok,
   });
-  const todos = [...vistos.values()];
+  const todos = [...novos];
   const viaveis = todos.filter((r) => r.regras.ok).sort((a, b) => (melhorQue(a, b) ? -1 : 1));
   const inviaveis = todos.filter((r) => !r.regras.ok).sort((a, b) => pontuacao(b) - pontuacao(a));
+  const rankingGeral = viaveisConhecidos();
 
   const agora = new Date().toISOString();
   const melhorou = !melhorInicial || melhorQue(melhor, melhorInicial);
@@ -188,14 +240,16 @@ export const otimizar = async ({
     criterio: CRITERIO,
     espaco: ESPACO,
     semente,
-    avaliacoesNestaRodada: vistos.size,
+    avaliacoesNestaRodada: novos.size,
+    estrategia,
+    cobertura,
     rodadas: (anterior?.rodadas ?? 0) + 1,
     referencia: resumo(referencia),
     melhor: { ...resumo(melhor), justificativas: justMelhor },
     melhorou,
-    ranking: viaveis.slice(0, 8).map(resumo),
+    ranking: rankingGeral.slice(0, 8).map(resumo),
     melhoresInviaveis: inviaveis.slice(0, 3).map((r) => ({ ...resumo(r), regras: r.regras })),
-    historico: [...(anterior?.historico ?? []), { executadaEm: agora, semente, avaliacoes: vistos.size, pontuacao: pontuacao(melhor), atendidas: melhor.atendidas, vencidasAtendidas: melhor.vencidasAtendidas, kmTotal: melhor.kmTotal, melhorou }],
+    historico: [...historicoAnterior, { executadaEm: agora, semente, avaliacoes: novos.size, pontuacao: pontuacao(melhor), atendidas: melhor.atendidas, vencidasAtendidas: melhor.vencidasAtendidas, kmTotal: melhor.kmTotal, melhorou }],
   };
   const { parametros, ...metricas } = melhor;
   doc.cenarios.otimizado = {
@@ -213,7 +267,9 @@ export const otimizar = async ({
     rodada: doc.otimizacao.rodadas,
     semente,
     tentativas: avaliacoes,
-    combinacoesTestadas: vistos.size,
+    combinacoesTestadas: novos.size,
+    estrategia,
+    cobertura,
     duracaoSegundos: Math.round((Date.now() - inicioRodada) / 100) / 10,
     criterio: CRITERIO,
     melhorou,

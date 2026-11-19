@@ -839,6 +839,1375 @@
           "regrasOk": true
         }
       ]
+    },
+    {
+      "executadaEm": "2026-11-19T19:52:27.904Z",
+      "dia": "2026-11-19",
+      "cenario": "Roterizacao Energisa Cronjob, Metodo Assincrono: 20261119-073059",
+      "origem": "painel",
+      "rodada": 3,
+      "semente": 117910679,
+      "tentativas": 120,
+      "combinacoesTestadas": 61,
+      "duracaoSegundos": 31.1,
+      "criterio": "Só entram candidatos que cumprem R1 e R2. Entre eles, maior pontuação = OS atendidas + vencidas em rota (a vencida conta em dobro). Empate: menos km.",
+      "melhorou": false,
+      "referencia": {
+        "parametros": {
+          "PotenciaPesos": 5,
+          "OsPrazoImportancia": 1,
+          "CompensacaoImportancia": 6,
+          "MetrosLimiteRotaPorEquipeSoft": 1000,
+          "CustoKmEquipe": 10,
+          "janelaVencidaCorrigida": false,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 403,
+        "atendidas": 403,
+        "vencidasAtendidas": 0,
+        "kmTotal": 976.9,
+        "veiculosUsados": 69,
+        "regrasOk": true
+      },
+      "melhorDaRodada": {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 6,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 506,
+        "atendidas": 469,
+        "vencidasAtendidas": 37,
+        "kmTotal": 904.3,
+        "veiculosUsados": 74,
+        "regrasOk": true,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 74,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 904.3,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 30.1,
+            "limiteKmEquipe": 35,
+            "ok": true
+          },
+          "ok": true
+        },
+        "justificativas": [
+          {
+            "parametro": "PotenciaPesos",
+            "de": 5,
+            "para": 6,
+            "mecanismo": "Aumenta a escala do penalty inteiro (base 5 para 6). Pular OS fica mais caro em relação ao custo de km, e o solver atende mais.",
+            "efeito": {
+              "os": 8,
+              "vencidas": 1,
+              "km": 108.29999999999995,
+              "semTroca": {
+                "atendidas": 461,
+                "vencidasAtendidas": 36,
+                "kmTotal": 796,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +8 OS, +1 vencidas em rota, +108 km."
+          },
+          {
+            "parametro": "OsPrazoImportancia",
+            "de": 1,
+            "para": 4,
+            "mecanismo": "O fator de prazo (horas vencida ou até vencer) passa de 6^1 para 6^4 no penalty, e as OS mais atrasadas sobem na fila.",
+            "efeito": {
+              "os": 49,
+              "vencidas": 2,
+              "km": 209.69999999999993,
+              "semTroca": {
+                "atendidas": 420,
+                "vencidasAtendidas": 35,
+                "kmTotal": 694.6,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +49 OS, +2 vencidas em rota, +210 km."
+          },
+          {
+            "parametro": "CompensacaoImportancia",
+            "de": 6,
+            "para": 4,
+            "mecanismo": "A compensação financeira passa de 6^6 para 6^4 no penalty, o que abre espaço para o prazo pesar mais e evita que poucas OS caras dominem a fila.",
+            "efeito": {
+              "os": -17,
+              "vencidas": 0,
+              "km": -427.60000000000014,
+              "semTroca": {
+                "atendidas": 486,
+                "vencidasAtendidas": 37,
+                "kmTotal": 1331.9,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 486 OS, mas com 1.332 km com limite de 977 km. Saldo da troca: −17 OS, ±0 vencidas em rota, −428 km."
+          },
+          {
+            "parametro": "MetrosLimiteRotaPorEquipeSoft",
+            "de": 1000,
+            "para": 20000,
+            "mecanismo": "A cobrança extra de 30 por km só começa depois de 20 km de rota, e não mais de 1 km. Rotas de tamanho normal deixam de pagar o adicional.",
+            "efeito": {
+              "os": 56,
+              "vencidas": 1,
+              "km": 373.9,
+              "semTroca": {
+                "atendidas": 413,
+                "vencidasAtendidas": 36,
+                "kmTotal": 530.4,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +56 OS, +1 vencidas em rota, +374 km."
+          },
+          {
+            "parametro": "CustoKmEquipe",
+            "de": 10,
+            "para": 5,
+            "mecanismo": "Cada km custa 5 em vez de 10 no objetivo, e o solver aceita desvios curtos para pegar mais OS. Quem segura o km total é a R2, não esse custo.",
+            "efeito": {
+              "os": 8,
+              "vencidas": 0,
+              "km": 86.5,
+              "semTroca": {
+                "atendidas": 461,
+                "vencidasAtendidas": 37,
+                "kmTotal": 817.8,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +8 OS, ±0 vencidas em rota, +87 km."
+          },
+          {
+            "parametro": "janelaVencidaCorrigida",
+            "de": false,
+            "para": true,
+            "mecanismo": "A OS vencida passa a ter uma única janela no turno inteiro, sem custo fixo igual à compensação. Atender passa a custar menos que pular.",
+            "efeito": {
+              "os": 19,
+              "vencidas": 37,
+              "km": -12.900000000000091,
+              "semTroca": {
+                "atendidas": 450,
+                "vencidasAtendidas": 0,
+                "kmTotal": 917.2,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +19 OS, +37 vencidas em rota, −13 km."
+          },
+          {
+            "parametro": "horasSoftVencida",
+            "de": 4,
+            "para": 6,
+            "mecanismo": "A multa por atraso da vencida começa 6 h depois do início do turno, e não 4 h, o que dá mais folga para encaixá-la na rota.",
+            "efeito": {
+              "os": 0,
+              "vencidas": -1,
+              "km": -36.40000000000009,
+              "semTroca": {
+                "atendidas": 469,
+                "vencidasAtendidas": 38,
+                "kmTotal": 940.7,
+                "regrasOk": true
+              }
+            },
+            "porque": "Sozinha, esta troca piora a combinação: ±0 OS, −1 vencidas em rota, −36 km. Ela entrou porque a busca avalia a combinação inteira. Vale testar voltar este parâmetro ao valor do dia."
+          }
+        ]
+      },
+      "melhorGeral": {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 507,
+        "atendidas": 469,
+        "vencidasAtendidas": 38,
+        "kmTotal": 940.7,
+        "veiculosUsados": 74,
+        "regrasOk": true,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 74,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 940.7,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 30.1,
+            "limiteKmEquipe": 35,
+            "ok": true
+          },
+          "ok": true
+        },
+        "justificativas": [
+          {
+            "parametro": "PotenciaPesos",
+            "de": 5,
+            "para": 6,
+            "mecanismo": "Aumenta a escala do penalty inteiro (base 5 para 6). Pular OS fica mais caro em relação ao custo de km, e o solver atende mais.",
+            "efeito": {
+              "os": 9,
+              "vencidas": 2,
+              "km": 133.9000000000001,
+              "semTroca": {
+                "atendidas": 460,
+                "vencidasAtendidas": 36,
+                "kmTotal": 806.8,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +9 OS, +2 vencidas em rota, +134 km."
+          },
+          {
+            "parametro": "OsPrazoImportancia",
+            "de": 1,
+            "para": 4,
+            "mecanismo": "O fator de prazo (horas vencida ou até vencer) passa de 6^1 para 6^4 no penalty, e as OS mais atrasadas sobem na fila.",
+            "efeito": {
+              "os": 48,
+              "vencidas": 3,
+              "km": 254.60000000000002,
+              "semTroca": {
+                "atendidas": 421,
+                "vencidasAtendidas": 35,
+                "kmTotal": 686.1,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +48 OS, +3 vencidas em rota, +255 km."
+          },
+          {
+            "parametro": "CompensacaoImportancia",
+            "de": 6,
+            "para": 4,
+            "mecanismo": "A compensação financeira passa de 6^6 para 6^4 no penalty, o que abre espaço para o prazo pesar mais e evita que poucas OS caras dominem a fila.",
+            "efeito": {
+              "os": -20,
+              "vencidas": 1,
+              "km": -380.70000000000005,
+              "semTroca": {
+                "atendidas": 489,
+                "vencidasAtendidas": 37,
+                "kmTotal": 1321.4,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 489 OS, mas com 1.321 km com limite de 977 km. Saldo da troca: −20 OS, +1 vencidas em rota, −381 km."
+          },
+          {
+            "parametro": "MetrosLimiteRotaPorEquipeSoft",
+            "de": 1000,
+            "para": 20000,
+            "mecanismo": "A cobrança extra de 30 por km só começa depois de 20 km de rota, e não mais de 1 km. Rotas de tamanho normal deixam de pagar o adicional.",
+            "efeito": {
+              "os": 56,
+              "vencidas": 2,
+              "km": 408.80000000000007,
+              "semTroca": {
+                "atendidas": 413,
+                "vencidasAtendidas": 36,
+                "kmTotal": 531.9,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +56 OS, +2 vencidas em rota, +409 km."
+          },
+          {
+            "parametro": "CustoKmEquipe",
+            "de": 10,
+            "para": 5,
+            "mecanismo": "Cada km custa 5 em vez de 10 no objetivo, e o solver aceita desvios curtos para pegar mais OS. Quem segura o km total é a R2, não esse custo.",
+            "efeito": {
+              "os": 7,
+              "vencidas": 1,
+              "km": 130.30000000000007,
+              "semTroca": {
+                "atendidas": 462,
+                "vencidasAtendidas": 37,
+                "kmTotal": 810.4,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +7 OS, +1 vencidas em rota, +130 km."
+          },
+          {
+            "parametro": "janelaVencidaCorrigida",
+            "de": false,
+            "para": true,
+            "mecanismo": "A OS vencida passa a ter uma única janela no turno inteiro, sem custo fixo igual à compensação. Atender passa a custar menos que pular.",
+            "efeito": {
+              "os": 19,
+              "vencidas": 38,
+              "km": 23.5,
+              "semTroca": {
+                "atendidas": 450,
+                "vencidasAtendidas": 0,
+                "kmTotal": 917.2,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +19 OS, +38 vencidas em rota, +24 km."
+          }
+        ]
+      },
+      "viaveis": 41,
+      "inviaveis": 20,
+      "ranking": [
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 10
+          },
+          "pontuacao": 507,
+          "atendidas": 469,
+          "vencidasAtendidas": 38,
+          "kmTotal": 940.7,
+          "veiculosUsados": 74,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 6,
+            "multaVencidaHora": 10
+          },
+          "pontuacao": 506,
+          "atendidas": 469,
+          "vencidasAtendidas": 37,
+          "kmTotal": 904.3,
+          "veiculosUsados": 74,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 1
+          },
+          "pontuacao": 502,
+          "atendidas": 465,
+          "vencidasAtendidas": 37,
+          "kmTotal": 906.5,
+          "veiculosUsados": 74,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 50
+          },
+          "pontuacao": 501,
+          "atendidas": 464,
+          "vencidasAtendidas": 37,
+          "kmTotal": 945.4,
+          "veiculosUsados": 75,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 10,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 10
+          },
+          "pontuacao": 499,
+          "atendidas": 462,
+          "vencidasAtendidas": 37,
+          "kmTotal": 810.4,
+          "veiculosUsados": 73,
+          "regrasOk": true
+        }
+      ]
+    },
+    {
+      "executadaEm": "2026-11-19T19:53:10.951Z",
+      "dia": "2026-11-19",
+      "cenario": "Roterizacao Energisa Cronjob, Metodo Assincrono: 20261119-073059",
+      "origem": "painel",
+      "rodada": 4,
+      "semente": 117980716,
+      "tentativas": 120,
+      "combinacoesTestadas": 71,
+      "duracaoSegundos": 12,
+      "criterio": "Só entram candidatos que cumprem R1 e R2. Entre eles, maior pontuação = OS atendidas + vencidas em rota (a vencida conta em dobro). Empate: menos km.",
+      "melhorou": false,
+      "referencia": {
+        "parametros": {
+          "PotenciaPesos": 5,
+          "OsPrazoImportancia": 1,
+          "CompensacaoImportancia": 6,
+          "MetrosLimiteRotaPorEquipeSoft": 1000,
+          "CustoKmEquipe": 10,
+          "janelaVencidaCorrigida": false,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 403,
+        "atendidas": 403,
+        "vencidasAtendidas": 0,
+        "kmTotal": 976.9,
+        "veiculosUsados": 69,
+        "regrasOk": true
+      },
+      "melhorDaRodada": {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 6,
+          "multaVencidaHora": 50
+        },
+        "pontuacao": 506,
+        "atendidas": 469,
+        "vencidasAtendidas": 37,
+        "kmTotal": 904.2,
+        "veiculosUsados": 74,
+        "regrasOk": true,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 74,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 904.2,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 30.1,
+            "limiteKmEquipe": 35,
+            "ok": true
+          },
+          "ok": true
+        },
+        "justificativas": [
+          {
+            "parametro": "PotenciaPesos",
+            "de": 5,
+            "para": 6,
+            "mecanismo": "Aumenta a escala do penalty inteiro (base 5 para 6). Pular OS fica mais caro em relação ao custo de km, e o solver atende mais.",
+            "efeito": {
+              "os": 7,
+              "vencidas": 1,
+              "km": 103.70000000000005,
+              "semTroca": {
+                "atendidas": 462,
+                "vencidasAtendidas": 36,
+                "kmTotal": 800.5,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +7 OS, +1 vencidas em rota, +104 km."
+          },
+          {
+            "parametro": "OsPrazoImportancia",
+            "de": 1,
+            "para": 4,
+            "mecanismo": "O fator de prazo (horas vencida ou até vencer) passa de 6^1 para 6^4 no penalty, e as OS mais atrasadas sobem na fila.",
+            "efeito": {
+              "os": 49,
+              "vencidas": 2,
+              "km": 217.80000000000007,
+              "semTroca": {
+                "atendidas": 420,
+                "vencidasAtendidas": 35,
+                "kmTotal": 686.4,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +49 OS, +2 vencidas em rota, +218 km."
+          },
+          {
+            "parametro": "CompensacaoImportancia",
+            "de": 6,
+            "para": 4,
+            "mecanismo": "A compensação financeira passa de 6^6 para 6^4 no penalty, o que abre espaço para o prazo pesar mais e evita que poucas OS caras dominem a fila.",
+            "efeito": {
+              "os": -17,
+              "vencidas": 0,
+              "km": -430.5,
+              "semTroca": {
+                "atendidas": 486,
+                "vencidasAtendidas": 37,
+                "kmTotal": 1334.7,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 486 OS, mas com 1.335 km com limite de 977 km. Saldo da troca: −17 OS, ±0 vencidas em rota, −430 km."
+          },
+          {
+            "parametro": "MetrosLimiteRotaPorEquipeSoft",
+            "de": 1000,
+            "para": 20000,
+            "mecanismo": "A cobrança extra de 30 por km só começa depois de 20 km de rota, e não mais de 1 km. Rotas de tamanho normal deixam de pagar o adicional.",
+            "efeito": {
+              "os": 56,
+              "vencidas": 1,
+              "km": 370.80000000000007,
+              "semTroca": {
+                "atendidas": 413,
+                "vencidasAtendidas": 36,
+                "kmTotal": 533.4,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +56 OS, +1 vencidas em rota, +371 km."
+          },
+          {
+            "parametro": "CustoKmEquipe",
+            "de": 10,
+            "para": 5,
+            "mecanismo": "Cada km custa 5 em vez de 10 no objetivo, e o solver aceita desvios curtos para pegar mais OS. Quem segura o km total é a R2, não esse custo.",
+            "efeito": {
+              "os": 5,
+              "vencidas": 0,
+              "km": 90.20000000000005,
+              "semTroca": {
+                "atendidas": 464,
+                "vencidasAtendidas": 37,
+                "kmTotal": 814,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +5 OS, ±0 vencidas em rota, +90 km."
+          },
+          {
+            "parametro": "janelaVencidaCorrigida",
+            "de": false,
+            "para": true,
+            "mecanismo": "A OS vencida passa a ter uma única janela no turno inteiro, sem custo fixo igual à compensação. Atender passa a custar menos que pular.",
+            "efeito": {
+              "os": 19,
+              "vencidas": 37,
+              "km": -13,
+              "semTroca": {
+                "atendidas": 450,
+                "vencidasAtendidas": 0,
+                "kmTotal": 917.2,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +19 OS, +37 vencidas em rota, −13 km."
+          },
+          {
+            "parametro": "horasSoftVencida",
+            "de": 4,
+            "para": 6,
+            "mecanismo": "A multa por atraso da vencida começa 6 h depois do início do turno, e não 4 h, o que dá mais folga para encaixá-la na rota.",
+            "efeito": {
+              "os": 5,
+              "vencidas": 0,
+              "km": -41.19999999999993,
+              "semTroca": {
+                "atendidas": 464,
+                "vencidasAtendidas": 37,
+                "kmTotal": 945.4,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +5 OS, ±0 vencidas em rota, −41 km."
+          },
+          {
+            "parametro": "multaVencidaHora",
+            "de": 10,
+            "para": 50,
+            "mecanismo": "A multa por hora de atraso da vencida, depois do soft end, passa de 10 para 50, e as vencidas vão para o início da rota.",
+            "efeito": {
+              "os": 0,
+              "vencidas": 0,
+              "km": -0.09999999999990905,
+              "semTroca": {
+                "atendidas": 469,
+                "vencidasAtendidas": 37,
+                "kmTotal": 904.3,
+                "regrasOk": true
+              }
+            },
+            "porque": "Nesta combinação, a troca não mudou OS nem vencidas (−0 km). Ela pode ser revertida sem perda."
+          }
+        ]
+      },
+      "melhorGeral": {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 507,
+        "atendidas": 469,
+        "vencidasAtendidas": 38,
+        "kmTotal": 940.7,
+        "veiculosUsados": 74,
+        "regrasOk": true,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 74,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 940.7,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 30.1,
+            "limiteKmEquipe": 35,
+            "ok": true
+          },
+          "ok": true
+        },
+        "justificativas": [
+          {
+            "parametro": "PotenciaPesos",
+            "de": 5,
+            "para": 6,
+            "mecanismo": "Aumenta a escala do penalty inteiro (base 5 para 6). Pular OS fica mais caro em relação ao custo de km, e o solver atende mais.",
+            "efeito": {
+              "os": 9,
+              "vencidas": 2,
+              "km": 133.9000000000001,
+              "semTroca": {
+                "atendidas": 460,
+                "vencidasAtendidas": 36,
+                "kmTotal": 806.8,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +9 OS, +2 vencidas em rota, +134 km."
+          },
+          {
+            "parametro": "OsPrazoImportancia",
+            "de": 1,
+            "para": 4,
+            "mecanismo": "O fator de prazo (horas vencida ou até vencer) passa de 6^1 para 6^4 no penalty, e as OS mais atrasadas sobem na fila.",
+            "efeito": {
+              "os": 48,
+              "vencidas": 3,
+              "km": 254.60000000000002,
+              "semTroca": {
+                "atendidas": 421,
+                "vencidasAtendidas": 35,
+                "kmTotal": 686.1,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +48 OS, +3 vencidas em rota, +255 km."
+          },
+          {
+            "parametro": "CompensacaoImportancia",
+            "de": 6,
+            "para": 4,
+            "mecanismo": "A compensação financeira passa de 6^6 para 6^4 no penalty, o que abre espaço para o prazo pesar mais e evita que poucas OS caras dominem a fila.",
+            "efeito": {
+              "os": -20,
+              "vencidas": 1,
+              "km": -380.70000000000005,
+              "semTroca": {
+                "atendidas": 489,
+                "vencidasAtendidas": 37,
+                "kmTotal": 1321.4,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 489 OS, mas com 1.321 km com limite de 977 km. Saldo da troca: −20 OS, +1 vencidas em rota, −381 km."
+          },
+          {
+            "parametro": "MetrosLimiteRotaPorEquipeSoft",
+            "de": 1000,
+            "para": 20000,
+            "mecanismo": "A cobrança extra de 30 por km só começa depois de 20 km de rota, e não mais de 1 km. Rotas de tamanho normal deixam de pagar o adicional.",
+            "efeito": {
+              "os": 56,
+              "vencidas": 2,
+              "km": 408.80000000000007,
+              "semTroca": {
+                "atendidas": 413,
+                "vencidasAtendidas": 36,
+                "kmTotal": 531.9,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +56 OS, +2 vencidas em rota, +409 km."
+          },
+          {
+            "parametro": "CustoKmEquipe",
+            "de": 10,
+            "para": 5,
+            "mecanismo": "Cada km custa 5 em vez de 10 no objetivo, e o solver aceita desvios curtos para pegar mais OS. Quem segura o km total é a R2, não esse custo.",
+            "efeito": {
+              "os": 7,
+              "vencidas": 1,
+              "km": 130.30000000000007,
+              "semTroca": {
+                "atendidas": 462,
+                "vencidasAtendidas": 37,
+                "kmTotal": 810.4,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +7 OS, +1 vencidas em rota, +130 km."
+          },
+          {
+            "parametro": "janelaVencidaCorrigida",
+            "de": false,
+            "para": true,
+            "mecanismo": "A OS vencida passa a ter uma única janela no turno inteiro, sem custo fixo igual à compensação. Atender passa a custar menos que pular.",
+            "efeito": {
+              "os": 19,
+              "vencidas": 38,
+              "km": 23.5,
+              "semTroca": {
+                "atendidas": 450,
+                "vencidasAtendidas": 0,
+                "kmTotal": 917.2,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +19 OS, +38 vencidas em rota, +24 km."
+          }
+        ]
+      },
+      "viaveis": 39,
+      "inviaveis": 32,
+      "ranking": [
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 10
+          },
+          "pontuacao": 507,
+          "atendidas": 469,
+          "vencidasAtendidas": 38,
+          "kmTotal": 940.7,
+          "veiculosUsados": 74,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 6,
+            "multaVencidaHora": 50
+          },
+          "pontuacao": 506,
+          "atendidas": 469,
+          "vencidasAtendidas": 37,
+          "kmTotal": 904.2,
+          "veiculosUsados": 74,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 6,
+            "multaVencidaHora": 10
+          },
+          "pontuacao": 506,
+          "atendidas": 469,
+          "vencidasAtendidas": 37,
+          "kmTotal": 904.3,
+          "veiculosUsados": 74,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 1
+          },
+          "pontuacao": 502,
+          "atendidas": 465,
+          "vencidasAtendidas": 37,
+          "kmTotal": 906.5,
+          "veiculosUsados": 74,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 50
+          },
+          "pontuacao": 501,
+          "atendidas": 464,
+          "vencidasAtendidas": 37,
+          "kmTotal": 945.4,
+          "veiculosUsados": 75,
+          "regrasOk": true
+        }
+      ]
+    },
+    {
+      "executadaEm": "2026-11-19T20:01:32.993Z",
+      "dia": "2026-11-19",
+      "cenario": "Roterizacao Energisa Cronjob, Metodo Assincrono: 20261119-073059",
+      "origem": "painel",
+      "rodada": 5,
+      "semente": 118475709,
+      "tentativas": 120,
+      "combinacoesTestadas": 120,
+      "estrategia": {
+        "estagnacao": 3,
+        "raio": 4,
+        "fracaoAleatoria": 0.6,
+        "partidas": 2
+      },
+      "cobertura": {
+        "testadas": 122,
+        "espaco": 79968
+      },
+      "duracaoSegundos": 18,
+      "criterio": "Só entram candidatos que cumprem R1 e R2. Entre eles, maior pontuação = OS atendidas + vencidas em rota (a vencida conta em dobro). Empate: menos km.",
+      "melhorou": true,
+      "referencia": {
+        "parametros": {
+          "PotenciaPesos": 5,
+          "OsPrazoImportancia": 1,
+          "CompensacaoImportancia": 6,
+          "MetrosLimiteRotaPorEquipeSoft": 1000,
+          "CustoKmEquipe": 10,
+          "janelaVencidaCorrigida": false,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 403,
+        "atendidas": 403,
+        "vencidasAtendidas": 0,
+        "kmTotal": 976.9,
+        "veiculosUsados": 69,
+        "regrasOk": true
+      },
+      "melhorDaRodada": {
+        "parametros": {
+          "PotenciaPesos": 4,
+          "OsPrazoImportancia": 7,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 5000,
+          "CustoKmEquipe": 60,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 9,
+          "multaVencidaHora": 100
+        },
+        "pontuacao": 513,
+        "atendidas": 475,
+        "vencidasAtendidas": 38,
+        "kmTotal": 935,
+        "veiculosUsados": 76,
+        "regrasOk": true,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 76,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 935,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 33,
+            "limiteKmEquipe": 35,
+            "ok": true
+          },
+          "ok": true
+        },
+        "justificativas": [
+          {
+            "parametro": "PotenciaPesos",
+            "de": 5,
+            "para": 4,
+            "mecanismo": "Reduz a escala do penalty inteiro (base 5 para 4). O custo de km passa a pesar mais na decisão de atender ou pular.",
+            "efeito": {
+              "os": -15,
+              "vencidas": -1,
+              "km": -380.5,
+              "semTroca": {
+                "atendidas": 490,
+                "vencidasAtendidas": 39,
+                "kmTotal": 1315.5,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 490 OS, mas com 1.316 km com limite de 977 km. Saldo da troca: −15 OS, −1 vencidas em rota, −380 km."
+          },
+          {
+            "parametro": "OsPrazoImportancia",
+            "de": 1,
+            "para": 7,
+            "mecanismo": "O fator de prazo (horas vencida ou até vencer) passa de 4^1 para 4^7 no penalty, e as OS mais atrasadas sobem na fila.",
+            "efeito": {
+              "os": 457,
+              "vencidas": 37,
+              "km": 929.9,
+              "semTroca": {
+                "atendidas": 18,
+                "vencidasAtendidas": 1,
+                "kmTotal": 5.1,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +457 OS, +37 vencidas em rota, +930 km."
+          },
+          {
+            "parametro": "CompensacaoImportancia",
+            "de": 6,
+            "para": 4,
+            "mecanismo": "A compensação financeira passa de 4^6 para 4^4 no penalty, o que abre espaço para o prazo pesar mais e evita que poucas OS caras dominem a fila.",
+            "efeito": {
+              "os": -4,
+              "vencidas": 0,
+              "km": -133.5999999999999,
+              "semTroca": {
+                "atendidas": 479,
+                "vencidasAtendidas": 38,
+                "kmTotal": 1068.6,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 479 OS, mas com 1.069 km com limite de 977 km. Saldo da troca: −4 OS, ±0 vencidas em rota, −134 km."
+          },
+          {
+            "parametro": "MetrosLimiteRotaPorEquipeSoft",
+            "de": 1000,
+            "para": 5000,
+            "mecanismo": "A cobrança extra de 30 por km só começa depois de 5 km de rota, e não mais de 1 km. Rotas de tamanho normal deixam de pagar o adicional.",
+            "efeito": {
+              "os": 3,
+              "vencidas": -1,
+              "km": -11.799999999999955,
+              "semTroca": {
+                "atendidas": 472,
+                "vencidasAtendidas": 39,
+                "kmTotal": 946.8,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +3 OS, −1 vencidas em rota, −12 km."
+          },
+          {
+            "parametro": "CustoKmEquipe",
+            "de": 10,
+            "para": 60,
+            "mecanismo": "Cada km custa 60 em vez de 10 no objetivo, e o solver evita desvios, o que reduz o km total.",
+            "efeito": {
+              "os": -18,
+              "vencidas": -1,
+              "km": -367.20000000000005,
+              "semTroca": {
+                "atendidas": 493,
+                "vencidasAtendidas": 39,
+                "kmTotal": 1302.2,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 493 OS, mas com 1.302 km com limite de 977 km. Saldo da troca: −18 OS, −1 vencidas em rota, −367 km."
+          },
+          {
+            "parametro": "janelaVencidaCorrigida",
+            "de": false,
+            "para": true,
+            "mecanismo": "A OS vencida passa a ter uma única janela no turno inteiro, sem custo fixo igual à compensação. Atender passa a custar menos que pular.",
+            "efeito": {
+              "os": 15,
+              "vencidas": 28,
+              "km": 62.799999999999955,
+              "semTroca": {
+                "atendidas": 460,
+                "vencidasAtendidas": 10,
+                "kmTotal": 872.2,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +15 OS, +28 vencidas em rota, +63 km."
+          },
+          {
+            "parametro": "horasSoftVencida",
+            "de": 4,
+            "para": 9,
+            "mecanismo": "A multa por atraso da vencida começa 9 h depois do início do turno, e não 4 h, o que dá mais folga para encaixá-la na rota.",
+            "efeito": {
+              "os": 3,
+              "vencidas": 0,
+              "km": 7,
+              "semTroca": {
+                "atendidas": 472,
+                "vencidasAtendidas": 38,
+                "kmTotal": 928,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +3 OS, ±0 vencidas em rota, +7 km."
+          },
+          {
+            "parametro": "multaVencidaHora",
+            "de": 10,
+            "para": 100,
+            "mecanismo": "A multa por hora de atraso da vencida, depois do soft end, passa de 10 para 100, e as vencidas vão para o início da rota.",
+            "efeito": {
+              "os": 0,
+              "vencidas": 0,
+              "km": 0,
+              "semTroca": {
+                "atendidas": 475,
+                "vencidasAtendidas": 38,
+                "kmTotal": 935,
+                "regrasOk": true
+              }
+            },
+            "porque": "Nesta combinação, a troca não mudou OS nem vencidas (±0 km). Ela pode ser revertida sem perda."
+          }
+        ]
+      },
+      "melhorGeral": {
+        "parametros": {
+          "PotenciaPesos": 4,
+          "OsPrazoImportancia": 7,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 5000,
+          "CustoKmEquipe": 60,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 9,
+          "multaVencidaHora": 100
+        },
+        "pontuacao": 513,
+        "atendidas": 475,
+        "vencidasAtendidas": 38,
+        "kmTotal": 935,
+        "veiculosUsados": 76,
+        "regrasOk": true,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 76,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 935,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 33,
+            "limiteKmEquipe": 35,
+            "ok": true
+          },
+          "ok": true
+        },
+        "justificativas": [
+          {
+            "parametro": "PotenciaPesos",
+            "de": 5,
+            "para": 4,
+            "mecanismo": "Reduz a escala do penalty inteiro (base 5 para 4). O custo de km passa a pesar mais na decisão de atender ou pular.",
+            "efeito": {
+              "os": -15,
+              "vencidas": -1,
+              "km": -380.5,
+              "semTroca": {
+                "atendidas": 490,
+                "vencidasAtendidas": 39,
+                "kmTotal": 1315.5,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 490 OS, mas com 1.316 km com limite de 977 km. Saldo da troca: −15 OS, −1 vencidas em rota, −380 km."
+          },
+          {
+            "parametro": "OsPrazoImportancia",
+            "de": 1,
+            "para": 7,
+            "mecanismo": "O fator de prazo (horas vencida ou até vencer) passa de 4^1 para 4^7 no penalty, e as OS mais atrasadas sobem na fila.",
+            "efeito": {
+              "os": 457,
+              "vencidas": 37,
+              "km": 929.9,
+              "semTroca": {
+                "atendidas": 18,
+                "vencidasAtendidas": 1,
+                "kmTotal": 5.1,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +457 OS, +37 vencidas em rota, +930 km."
+          },
+          {
+            "parametro": "CompensacaoImportancia",
+            "de": 6,
+            "para": 4,
+            "mecanismo": "A compensação financeira passa de 4^6 para 4^4 no penalty, o que abre espaço para o prazo pesar mais e evita que poucas OS caras dominem a fila.",
+            "efeito": {
+              "os": -4,
+              "vencidas": 0,
+              "km": -133.5999999999999,
+              "semTroca": {
+                "atendidas": 479,
+                "vencidasAtendidas": 38,
+                "kmTotal": 1068.6,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 479 OS, mas com 1.069 km com limite de 977 km. Saldo da troca: −4 OS, ±0 vencidas em rota, −134 km."
+          },
+          {
+            "parametro": "MetrosLimiteRotaPorEquipeSoft",
+            "de": 1000,
+            "para": 5000,
+            "mecanismo": "A cobrança extra de 30 por km só começa depois de 5 km de rota, e não mais de 1 km. Rotas de tamanho normal deixam de pagar o adicional.",
+            "efeito": {
+              "os": 3,
+              "vencidas": -1,
+              "km": -11.799999999999955,
+              "semTroca": {
+                "atendidas": 472,
+                "vencidasAtendidas": 39,
+                "kmTotal": 946.8,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +3 OS, −1 vencidas em rota, −12 km."
+          },
+          {
+            "parametro": "CustoKmEquipe",
+            "de": 10,
+            "para": 60,
+            "mecanismo": "Cada km custa 60 em vez de 10 no objetivo, e o solver evita desvios, o que reduz o km total.",
+            "efeito": {
+              "os": -18,
+              "vencidas": -1,
+              "km": -367.20000000000005,
+              "semTroca": {
+                "atendidas": 493,
+                "vencidasAtendidas": 39,
+                "kmTotal": 1302.2,
+                "regrasOk": false
+              }
+            },
+            "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 493 OS, mas com 1.302 km com limite de 977 km. Saldo da troca: −18 OS, −1 vencidas em rota, −367 km."
+          },
+          {
+            "parametro": "janelaVencidaCorrigida",
+            "de": false,
+            "para": true,
+            "mecanismo": "A OS vencida passa a ter uma única janela no turno inteiro, sem custo fixo igual à compensação. Atender passa a custar menos que pular.",
+            "efeito": {
+              "os": 15,
+              "vencidas": 28,
+              "km": 62.799999999999955,
+              "semTroca": {
+                "atendidas": 460,
+                "vencidasAtendidas": 10,
+                "kmTotal": 872.2,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +15 OS, +28 vencidas em rota, +63 km."
+          },
+          {
+            "parametro": "horasSoftVencida",
+            "de": 4,
+            "para": 9,
+            "mecanismo": "A multa por atraso da vencida começa 9 h depois do início do turno, e não 4 h, o que dá mais folga para encaixá-la na rota.",
+            "efeito": {
+              "os": 3,
+              "vencidas": 0,
+              "km": 7,
+              "semTroca": {
+                "atendidas": 472,
+                "vencidasAtendidas": 38,
+                "kmTotal": 928,
+                "regrasOk": true
+              }
+            },
+            "porque": "Comparada com a mesma combinação sem esta troca, ela rende +3 OS, ±0 vencidas em rota, +7 km."
+          },
+          {
+            "parametro": "multaVencidaHora",
+            "de": 10,
+            "para": 100,
+            "mecanismo": "A multa por hora de atraso da vencida, depois do soft end, passa de 10 para 100, e as vencidas vão para o início da rota.",
+            "efeito": {
+              "os": 0,
+              "vencidas": 0,
+              "km": 0,
+              "semTroca": {
+                "atendidas": 475,
+                "vencidasAtendidas": 38,
+                "kmTotal": 935,
+                "regrasOk": true
+              }
+            },
+            "porque": "Nesta combinação, a troca não mudou OS nem vencidas (±0 km). Ela pode ser revertida sem perda."
+          }
+        ]
+      },
+      "viaveis": 65,
+      "inviaveis": 55,
+      "ranking": [
+        {
+          "parametros": {
+            "PotenciaPesos": 4,
+            "OsPrazoImportancia": 7,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 5000,
+            "CustoKmEquipe": 60,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 9,
+            "multaVencidaHora": 100
+          },
+          "pontuacao": 513,
+          "atendidas": 475,
+          "vencidasAtendidas": 38,
+          "kmTotal": 935,
+          "veiculosUsados": 76,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 4,
+            "OsPrazoImportancia": 7,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 5000,
+            "CustoKmEquipe": 60,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 100
+          },
+          "pontuacao": 510,
+          "atendidas": 472,
+          "vencidasAtendidas": 38,
+          "kmTotal": 928,
+          "veiculosUsados": 76,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 4,
+            "OsPrazoImportancia": 7,
+            "CompensacaoImportancia": 5,
+            "MetrosLimiteRotaPorEquipeSoft": 5000,
+            "CustoKmEquipe": 60,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 100
+          },
+          "pontuacao": 510,
+          "atendidas": 472,
+          "vencidasAtendidas": 38,
+          "kmTotal": 933.9,
+          "veiculosUsados": 76,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 6,
+            "OsPrazoImportancia": 4,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 5,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 4,
+            "multaVencidaHora": 1
+          },
+          "pontuacao": 502,
+          "atendidas": 465,
+          "vencidasAtendidas": 37,
+          "kmTotal": 906.5,
+          "veiculosUsados": 74,
+          "regrasOk": true
+        },
+        {
+          "parametros": {
+            "PotenciaPesos": 3,
+            "OsPrazoImportancia": 7,
+            "CompensacaoImportancia": 4,
+            "MetrosLimiteRotaPorEquipeSoft": 20000,
+            "CustoKmEquipe": 15,
+            "janelaVencidaCorrigida": true,
+            "horasSoftVencida": 9,
+            "multaVencidaHora": 100
+          },
+          "pontuacao": 495,
+          "atendidas": 459,
+          "vencidasAtendidas": 36,
+          "kmTotal": 722.8,
+          "veiculosUsados": 75,
+          "regrasOk": true
+        }
+      ]
     }
   ]
 }

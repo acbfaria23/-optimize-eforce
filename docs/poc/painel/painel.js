@@ -365,6 +365,11 @@ const tabelaJustificativas = (justs) => {
       el("td", { class: j.efeito.semTroca.regrasOk ? "" : "segura-regra" }, j.porque)))));
 };
 
+const textoEstrategia = (est, cob) => [
+  est && `até ${est.raio} parâmetros por mutação, ${Math.round(est.fracaoAleatoria * 100)}% sorteadas do zero, partindo das ${est.partidas} melhores${est.estagnacao ? ` (${est.estagnacao} rodada${est.estagnacao > 1 ? "s" : ""} seguidas sem melhora)` : ""}`,
+  cob && `${n(cob.testadas)} de ${n(cob.espaco)} combinações já testadas no lote`,
+].filter(Boolean).join(" · ");
+
 const mudancas = (params, refParams) =>
   Object.keys(PARAMETROS_BUSCA)
     .filter((k) => params[k] !== refParams[k] && !(soVencida(k) && !params.janelaVencidaCorrigida))
@@ -402,7 +407,8 @@ const renderOtimizacao = (sim, dia) => {
 
   const historico = (o.historico ?? []).map((h, i) => `rodada ${i + 1}: ${h.atendidas} OS e ${h.vencidasAtendidas} vencidas${h.melhorou ? " (melhorou)" : ""}`).join(" · ");
   alvo.replaceChildren(
-    el("p", { class: "nota" }, `Rodada ${o.rodadas} em ${new Date(o.executadaEm).toLocaleString("pt-BR")} · ${o.avaliacoesNestaRodada} combinações testadas · ${o.melhorou ? "encontrou resultado melhor" : "não superou o melhor anterior"}.`),
+    el("p", { class: "nota" }, `Rodada ${o.rodadas} em ${new Date(o.executadaEm).toLocaleString("pt-BR")} · ${o.avaliacoesNestaRodada} combinações ${o.cobertura ? "novas" : ""} testadas · ${o.melhorou ? "encontrou resultado melhor" : "não superou o melhor anterior"}.`),
+    o.estrategia || o.cobertura ? el("p", { class: "nota" }, `Estratégia: ${textoEstrategia(o.estrategia, o.cobertura)}. Combinações já testadas em rodadas anteriores não são repetidas.`) : null,
     metricas,
     el("div", { class: "grade" },
       el("div", {}, el("h3", {}, "Melhor combinação"), tabela),
@@ -496,7 +502,7 @@ const graficoEvolucao = (execs) => {
     el("span", { style: "--cor:var(--destaque)" }, "Melhor encontrado em cada execução")));
 };
 
-const cartaoExecucao = (e, numero, melhorDeTodas) => {
+const cartaoExecucao = (e, numero, melhorDeTodas, rep) => {
   const d = dataHora(e.executadaEm);
   const m = e.melhorDaRodada ?? e.melhorGeral;
   const ref = e.referencia;
@@ -509,17 +515,23 @@ const cartaoExecucao = (e, numero, melhorDeTodas) => {
     ...chipsRegras({ regras: m.regras }),
     e.melhorou ? el("span", { class: "chip bom" }, "melhorou o acumulado") : el("span", { class: "chip neutro" }, "não superou o acumulado"),
     melhorDeTodas ? el("span", { class: "chip bom" }, "★ melhor de todas") : null,
+    rep ? el("span", { class: "chip neutro" }, `mesmo resultado que #${rep.numero}`) : null,
   ];
+  const notaRepeticao = rep && el("p", { class: "nota" }, rep.difs.length
+    ? `Mesmo resultado da execução #${rep.numero}, mas com outra combinação (${rep.difs.join(" · ")}). Nesta região, esses parâmetros não mudam o resultado simulado.`
+    : `Mesma combinação da execução #${rep.numero}. Execuções gravadas antes da memória de combinações testadas podiam repetir candidatos.`);
   const metrica = (v, rotulo) => el("div", { class: "metrica" }, el("div", { class: "v" }, v), el("div", { class: "r" }, rotulo));
   return el("details", { class: `execucao${melhorDeTodas ? " melhor" : ""}` },
     el("summary", {}, resumoTopo),
     el("div", { class: "corpo" },
       el("p", { class: "nota" },
-        `Rodada ${e.rodada} · ${e.tentativas} tentativas, ${e.combinacoesTestadas} combinações diferentes`,
+        `Rodada ${e.rodada} · ${e.tentativas} tentativas, ${e.combinacoesTestadas} combinações ${e.cobertura ? "inéditas" : "diferentes"}`,
         e.viaveis != null ? ` (${e.viaveis} viáveis, ${e.inviaveis} reprovadas em R1/R2)` : "",
         e.duracaoSegundos != null ? ` · ${n(e.duracaoSegundos)} s` : "",
         ` · semente ${e.semente}`,
         e.melhorDaRodada ? "" : " · nenhuma combinação nova viável; mostrando o melhor acumulado"),
+      e.estrategia ? el("p", { class: "nota" }, `Estratégia: ${textoEstrategia(e.estrategia, e.cobertura)}.`) : null,
+      notaRepeticao,
       el("div", { class: "metricas" },
         metrica(`${ref.atendidas} → ${m.atendidas}`, "OS atendidas"),
         metrica(`${ref.vencidasAtendidas} → ${m.vencidasAtendidas}`, "vencidas em rota"),
@@ -531,6 +543,20 @@ const cartaoExecucao = (e, numero, melhorDeTodas) => {
       el("div", { class: "grade espaco" },
         el("div", {}, el("h3", {}, "Parâmetros encontrados nesta execução"), tabelaParametros(ref.parametros, m.parametros)),
         el("div", {}, el("h3", {}, "Ranking desta execução"), el("div", { class: "rolagem" }, tabelaRanking(e.ranking, ref.parametros))))));
+};
+
+// Execução anterior com o mesmo resultado e quais parâmetros diferem entre as duas.
+const repeticao = (execs, i) => {
+  const m = execs[i].melhorDaRodada;
+  if (!m) return null;
+  const mesmo = (a) => a && a.atendidas === m.atendidas && a.vencidasAtendidas === m.vencidasAtendidas && Math.round(a.kmTotal) === Math.round(m.kmTotal);
+  for (let j = i - 1; j >= 0; j--) {
+    const a = execs[j].melhorDaRodada;
+    if (!mesmo(a)) continue;
+    const difs = Object.keys(PARAMETROS_BUSCA).filter((k) => valorParametro(a.parametros[k]) !== valorParametro(m.parametros[k]) && !(soVencida(k) && !m.parametros.janelaVencidaCorrigida));
+    return { numero: j + 1, difs: difs.map((k) => `${k} ${valorParametro(a.parametros[k])} → ${valorParametro(m.parametros[k])}`) };
+  }
+  return null;
 };
 
 const renderHistorico = (hist) => {
@@ -573,7 +599,7 @@ const renderHistorico = (hist) => {
       el("summary", {}, `${g.rotulo} · ${[...g.horas.values()].flat().length} execuç${[...g.horas.values()].flat().length === 1 ? "ão" : "ões"}`),
       [...g.horas.entries()].sort((a, b) => b[0] - a[0]).map(([h, lista]) => el("div", { class: "grupo-hora" },
         el("h4", {}, `${doisDig(h)}h · ${lista.length} execuç${lista.length === 1 ? "ão" : "ões"}`),
-        [...lista].reverse().map(({ e, numero }) => cartaoExecucao(e, numero, numero === melhorIdx + 1)))))),
+        [...lista].reverse().map(({ e, numero }) => cartaoExecucao(e, numero, numero === melhorIdx + 1, repeticao(execs, numero - 1))))))),
   );
 };
 
