@@ -1,0 +1,269 @@
+{
+  "cenario": "Roterizacao Energisa Cronjob, Metodo Assincrono: 20261119-073059",
+  "geradoEm": "2026-11-19T18:14:05.663Z",
+  "totais": {
+    "osNoRequest": 633,
+    "veiculos": 88,
+    "veiculosUsados": 77,
+    "rotasSemVisita": 11,
+    "equipesAprovadas": 47,
+    "porGrupo": {
+      "planejada_nao_aprovada": 173,
+      "fora_da_rota": 175,
+      "aprovada": 285
+    }
+  },
+  "custosGoogle": {
+    "model.vehicles.fixed_cost": 231,
+    "model.shipments.penalty_cost": 187826,
+    "model.vehicles.route_distance_limit.cost_per_kilometer_above_soft_max": 30061.5,
+    "model.vehicles.cost_per_kilometer": 10780.64
+  },
+  "perfilDoLote": {
+    "risco": {
+      "N": 633
+    },
+    "regulada": {
+      "S": 633
+    },
+    "prazo": {
+      "NO_PRAZO": 584,
+      "VENCIDA": 49
+    },
+    "tipo": {
+      "COMERCIAL": 633
+    },
+    "loc": {
+      "URBANA": 582,
+      "RURAL": 51
+    },
+    "prio": {
+      "NORMAL": 633
+    },
+    "reinc": {
+      "N": 633
+    }
+  },
+  "vencidasPorGrupo": {
+    "fora_da_rota": 49
+  },
+  "porGrupo": {
+    "aprovada": {
+      "penalty": {
+        "n": 285,
+        "min": 23,
+        "p25": 972,
+        "p50": 2032,
+        "p75": 2074,
+        "max": 15635
+      },
+      "compensacao": {
+        "n": 285,
+        "min": 88.3,
+        "p25": 2000,
+        "p50": 2102.6,
+        "p75": 2147,
+        "max": 37844.1
+      },
+      "compensacaoHora": {
+        "n": 285,
+        "min": 1.9,
+        "p25": 500,
+        "p50": 509.3,
+        "p75": 523.4,
+        "max": 1827
+      },
+      "horasAberta": {
+        "n": 285,
+        "min": 2,
+        "p25": 14,
+        "p50": 18,
+        "p75": 159,
+        "max": 717
+      },
+      "horasAteVencer": {
+        "n": 285,
+        "min": 2,
+        "p25": 8,
+        "p50": 12,
+        "p75": 18,
+        "max": 35
+      },
+      "equipesPermitidas": {
+        "n": 285,
+        "min": 1,
+        "p25": 4,
+        "p50": 6,
+        "p75": 8,
+        "max": 16
+      },
+      "prazo": {
+        "NO_PRAZO": 285
+      },
+      "loc": {
+        "URBANA": 260,
+        "RURAL": 25
+      }
+    },
+    "planejada_nao_aprovada": {
+      "penalty": {
+        "n": 173,
+        "min": 23,
+        "p25": 972,
+        "p50": 1025,
+        "p75": 2069,
+        "max": 2307
+      },
+      "compensacao": {
+        "n": 173,
+        "min": 88.3,
+        "p25": 2000,
+        "p50": 2000,
+        "p75": 2137.9,
+        "max": 3269.1
+      },
+      "compensacaoHora": {
+        "n": 173,
+        "min": 1.9,
+        "p25": 500,
+        "p50": 502.5,
+        "p75": 518.9,
+        "max": 1769.1
+      },
+      "horasAberta": {
+        "n": 173,
+        "min": 2,
+        "p25": 13,
+        "p50": 17,
+        "p75": 159,
+        "max": 716
+      },
+      "horasAteVencer": {
+        "n": 173,
+        "min": 2,
+        "p25": 9,
+        "p50": 18,
+        "p75": 18,
+        "max": 26
+      },
+      "equipesPermitidas": {
+        "n": 173,
+        "min": 1,
+        "p25": 5,
+        "p50": 7,
+        "p75": 9,
+        "max": 12
+      },
+      "prazo": {
+        "NO_PRAZO": 173
+      },
+      "loc": {
+        "URBANA": 169,
+        "RURAL": 4
+      }
+    },
+    "fora_da_rota": {
+      "penalty": {
+        "n": 175,
+        "min": 10,
+        "p25": 44,
+        "p50": 972,
+        "p75": 2043,
+        "max": 2839
+      },
+      "compensacao": {
+        "n": 175,
+        "min": 88.7,
+        "p25": 141.4,
+        "p50": 2000,
+        "p75": 2091,
+        "max": 2530.1
+      },
+      "compensacaoHora": {
+        "n": 175,
+        "min": 0.3,
+        "p25": 10,
+        "p50": 500,
+        "p75": 512,
+        "max": 1084.6
+      },
+      "horasAberta": {
+        "n": 175,
+        "min": 1,
+        "p25": 10,
+        "p50": 39,
+        "p75": 163,
+        "max": 714
+      },
+      "horasAteVencer": {
+        "n": 175,
+        "min": 0,
+        "p25": 0,
+        "p50": 18,
+        "p75": 26,
+        "max": 50
+      },
+      "equipesPermitidas": {
+        "n": 175,
+        "min": 1,
+        "p25": 2,
+        "p50": 4,
+        "p75": 7,
+        "max": 16
+      },
+      "prazo": {
+        "NO_PRAZO": 126,
+        "VENCIDA": 49
+      },
+      "loc": {
+        "RURAL": 22,
+        "URBANA": 153
+      }
+    }
+  },
+  "correlacaoComPenalty": {
+    "compensacao": 0.84,
+    "compensacaoHora": 0.7,
+    "horasAberta": 0.06,
+    "horasAteVencer": -0.73,
+    "vencida": 0.24
+  },
+  "rotas": {
+    "aprovadas": {
+      "km": {
+        "n": 47,
+        "min": 0.7,
+        "p25": 6.8,
+        "p50": 12.7,
+        "p75": 21.2,
+        "max": 36.8
+      },
+      "visitas": {
+        "n": 47,
+        "min": 1,
+        "p25": 4,
+        "p50": 6,
+        "p75": 8,
+        "max": 15
+      }
+    },
+    "naoAprovadasComVisita": {
+      "km": {
+        "n": 30,
+        "min": 0.3,
+        "p25": 8.9,
+        "p50": 11.2,
+        "p75": 16.3,
+        "max": 33.3
+      },
+      "visitas": {
+        "n": 30,
+        "min": 1,
+        "p25": 4,
+        "p50": 6,
+        "p75": 8,
+        "max": 11
+      }
+    }
+  }
+}
