@@ -1,0 +1,1233 @@
+{
+  "cenario": "Roterizacao Energisa Cronjob, Metodo Assincrono: 20261119-073059",
+  "geradoEm": "2026-11-19T19:11:56.770Z",
+  "aviso": "Simulação local com heurística de inserção gulosa. Compare cenários entre si; o cenário 'atual' mostra a distância para a resposta real da Google.",
+  "calibracao": {
+    "fatorRota": 1.38,
+    "velocidadeKmH": 30.2,
+    "penaltyReconstruidoIgualAoRequest": "633/633",
+    "googleReal": {
+      "atendidas": 458,
+      "foraDaRota": 175,
+      "vencidasAtendidas": 0,
+      "veiculosUsados": 77,
+      "kmTotal": 1078.1,
+      "custoTotal": 228899
+    }
+  },
+  "cenarios": {
+    "atual": {
+      "descricao": "Parâmetros de 19/11 e janelas como no request.",
+      "parametros": {},
+      "atendidas": 403,
+      "foraDaRota": 230,
+      "vencidasAtendidas": 0,
+      "vencidasForaDaRota": 49,
+      "veiculosUsados": 69,
+      "custos": {
+        "penalty": 223466,
+        "fixo": 207,
+        "porKm": 9769,
+        "acimaSoft": 27270,
+        "janela": 0,
+        "visita": 0
+      },
+      "custoTotal": 260712,
+      "kmTotal": 976.9,
+      "rotas": {
+        "km": {
+          "n": 69,
+          "min": 0.3,
+          "p50": 12.7,
+          "p90": 30.1,
+          "max": 34.9
+        },
+        "visitas": {
+          "n": 69,
+          "min": 1,
+          "p50": 6,
+          "p90": 9,
+          "max": 15
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 230,
+        "min": 10,
+        "p50": 972,
+        "p90": 2128,
+        "max": 2839
+      },
+      "penaltyDasAtendidas": {
+        "n": 403,
+        "min": 23,
+        "p50": 2032,
+        "p90": 2101,
+        "max": 15635
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 235,
+        "planejada_nao_aprovada": 142,
+        "fora_da_rota": 26
+      },
+      "sobreposicaoComGoogle": 377,
+      "horasAteVencerDasAtendidas": {
+        "n": 403,
+        "min": 2,
+        "p50": 11,
+        "p90": 18,
+        "max": 50
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 69,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 976.9,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 34.9,
+          "limiteKmEquipe": 35,
+          "ok": true
+        },
+        "ok": true
+      }
+    },
+    "pesos_sugeridos": {
+      "descricao": "PotenciaPesos 2, OsPrazoImportancia 6, soft max 20 km. Janelas como no request.",
+      "parametros": {
+        "pesos": {
+          "PotenciaPesos": 2,
+          "OsPrazoImportancia": 6
+        },
+        "softMaxMetros": 20000
+      },
+      "atendidas": 243,
+      "foraDaRota": 390,
+      "vencidasAtendidas": 0,
+      "vencidasForaDaRota": 49,
+      "veiculosUsados": 49,
+      "custos": {
+        "penalty": 9142,
+        "fixo": 147,
+        "porKm": 2076,
+        "acimaSoft": 0,
+        "janela": 0,
+        "visita": 0
+      },
+      "custoTotal": 11365,
+      "kmTotal": 207.6,
+      "rotas": {
+        "km": {
+          "n": 49,
+          "min": 0.3,
+          "p50": 3.4,
+          "p90": 7.9,
+          "max": 9.9
+        },
+        "visitas": {
+          "n": 49,
+          "min": 1,
+          "p50": 5,
+          "p90": 10,
+          "max": 13
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 390,
+        "min": 10,
+        "p50": 21,
+        "p90": 30,
+        "max": 81
+      },
+      "penaltyDasAtendidas": {
+        "n": 243,
+        "min": 15,
+        "p50": 21,
+        "p90": 28,
+        "max": 29
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 150,
+        "planejada_nao_aprovada": 75,
+        "fora_da_rota": 18
+      },
+      "sobreposicaoComGoogle": 225,
+      "horasAteVencerDasAtendidas": {
+        "n": 243,
+        "min": 2,
+        "p50": 18,
+        "p90": 26,
+        "max": 26
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 49,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 207.6,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 9.9,
+          "limiteKmEquipe": 35,
+          "ok": true
+        },
+        "ok": true
+      }
+    },
+    "janela_vencida": {
+      "descricao": "Só a correção da janela da vencida (turno inteiro, soft end +4 h, 10/h, sem custo de visita).",
+      "parametros": {
+        "corrigirVencida": true
+      },
+      "atendidas": 424,
+      "foraDaRota": 209,
+      "vencidasAtendidas": 37,
+      "vencidasForaDaRota": 12,
+      "veiculosUsados": 70,
+      "custos": {
+        "penalty": 168146,
+        "fixo": 210,
+        "porKm": 10911,
+        "acimaSoft": 30665,
+        "janela": 170,
+        "visita": 0
+      },
+      "custoTotal": 210102,
+      "kmTotal": 1091.1,
+      "rotas": {
+        "km": {
+          "n": 70,
+          "min": 0.3,
+          "p50": 14,
+          "p90": 30.8,
+          "max": 34.8
+        },
+        "visitas": {
+          "n": 70,
+          "min": 1,
+          "p50": 6,
+          "p90": 10,
+          "max": 14
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 209,
+        "min": 10,
+        "p50": 972,
+        "p90": 2050,
+        "max": 2397
+      },
+      "penaltyDasAtendidas": {
+        "n": 424,
+        "min": 23,
+        "p50": 2039,
+        "p90": 2139,
+        "max": 15635
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 225,
+        "planejada_nao_aprovada": 141,
+        "fora_da_rota": 58
+      },
+      "sobreposicaoComGoogle": 366,
+      "horasAteVencerDasAtendidas": {
+        "n": 387,
+        "min": 2,
+        "p50": 11,
+        "p90": 26,
+        "max": 50
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 70,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 1091.1,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 34.8,
+          "limiteKmEquipe": 35,
+          "ok": false
+        },
+        "ok": false
+      }
+    },
+    "sugerido_completo": {
+      "descricao": "Pesos sugeridos, soft max 20 km e janela da vencida corrigida.",
+      "parametros": {
+        "pesos": {
+          "PotenciaPesos": 2,
+          "OsPrazoImportancia": 6
+        },
+        "softMaxMetros": 20000,
+        "corrigirVencida": true
+      },
+      "atendidas": 256,
+      "foraDaRota": 377,
+      "vencidasAtendidas": 25,
+      "vencidasForaDaRota": 24,
+      "veiculosUsados": 49,
+      "custos": {
+        "penalty": 8516,
+        "fixo": 147,
+        "porKm": 2175,
+        "acimaSoft": 0,
+        "janela": 71,
+        "visita": 0
+      },
+      "custoTotal": 10909,
+      "kmTotal": 217.5,
+      "rotas": {
+        "km": {
+          "n": 49,
+          "min": 0.3,
+          "p50": 3.7,
+          "p90": 8.5,
+          "max": 10
+        },
+        "visitas": {
+          "n": 49,
+          "min": 1,
+          "p50": 5,
+          "p90": 10,
+          "max": 13
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 377,
+        "min": 10,
+        "p50": 21,
+        "p90": 29,
+        "max": 81
+      },
+      "penaltyDasAtendidas": {
+        "n": 256,
+        "min": 15,
+        "p50": 27,
+        "p90": 29,
+        "max": 81
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 144,
+        "planejada_nao_aprovada": 72,
+        "fora_da_rota": 40
+      },
+      "sobreposicaoComGoogle": 216,
+      "horasAteVencerDasAtendidas": {
+        "n": 231,
+        "min": 2,
+        "p50": 18,
+        "p90": 26,
+        "max": 26
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 49,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 217.5,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 10,
+          "limiteKmEquipe": 35,
+          "ok": true
+        },
+        "ok": true
+      }
+    },
+    "prazo6_potencia5": {
+      "descricao": "Só OsPrazoImportancia 6, mantendo PotenciaPesos 5, soft max 1 km e janelas do request.",
+      "parametros": {
+        "pesos": {
+          "OsPrazoImportancia": 6
+        }
+      },
+      "atendidas": 483,
+      "foraDaRota": 150,
+      "vencidasAtendidas": 12,
+      "vencidasForaDaRota": 37,
+      "veiculosUsados": 80,
+      "custos": {
+        "penalty": 530130,
+        "fixo": 240,
+        "porKm": 12962,
+        "acimaSoft": 36517,
+        "janela": 12734,
+        "visita": 26569
+      },
+      "custoTotal": 619152,
+      "kmTotal": 1296.2,
+      "rotas": {
+        "km": {
+          "n": 80,
+          "min": 0.3,
+          "p50": 13.9,
+          "p90": 30.8,
+          "max": 34.8
+        },
+        "visitas": {
+          "n": 80,
+          "min": 1,
+          "p50": 6,
+          "p90": 10,
+          "max": 14
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 150,
+        "min": 10,
+        "p50": 2869,
+        "p90": 5738,
+        "max": 8124
+      },
+      "penaltyDasAtendidas": {
+        "n": 483,
+        "min": 15,
+        "p50": 2932,
+        "p90": 4690,
+        "max": 17583
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 254,
+        "planejada_nao_aprovada": 164,
+        "fora_da_rota": 65
+      },
+      "sobreposicaoComGoogle": 418,
+      "horasAteVencerDasAtendidas": {
+        "n": 471,
+        "min": 2,
+        "p50": 18,
+        "p90": 26,
+        "max": 50
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 80,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 1296.2,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 34.8,
+          "limiteKmEquipe": 35,
+          "ok": false
+        },
+        "ok": false
+      }
+    },
+    "soft20km": {
+      "descricao": "Só soft max 20 km.",
+      "parametros": {
+        "softMaxMetros": 20000
+      },
+      "atendidas": 444,
+      "foraDaRota": 189,
+      "vencidasAtendidas": 0,
+      "vencidasForaDaRota": 49,
+      "veiculosUsados": 72,
+      "custos": {
+        "penalty": 216475,
+        "fixo": 216,
+        "porKm": 11115,
+        "acimaSoft": 4469,
+        "janela": 0,
+        "visita": 0
+      },
+      "custoTotal": 232275,
+      "kmTotal": 1111.5,
+      "rotas": {
+        "km": {
+          "n": 72,
+          "min": 0.3,
+          "p50": 14.2,
+          "p90": 30.3,
+          "max": 34.8
+        },
+        "visitas": {
+          "n": 72,
+          "min": 1,
+          "p50": 6,
+          "p90": 10,
+          "max": 15
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 189,
+        "min": 10,
+        "p50": 972,
+        "p90": 2148,
+        "max": 2839
+      },
+      "penaltyDasAtendidas": {
+        "n": 444,
+        "min": 21,
+        "p50": 1114,
+        "p90": 2099,
+        "max": 15635
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 254,
+        "planejada_nao_aprovada": 150,
+        "fora_da_rota": 40
+      },
+      "sobreposicaoComGoogle": 404,
+      "horasAteVencerDasAtendidas": {
+        "n": 444,
+        "min": 2,
+        "p50": 18,
+        "p90": 26,
+        "max": 50
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 72,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 1111.5,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 34.8,
+          "limiteKmEquipe": 35,
+          "ok": false
+        },
+        "ok": false
+      }
+    },
+    "prazo6_soft20": {
+      "descricao": "PotenciaPesos 5 mantido, OsPrazoImportancia 6 e soft max 20 km. Janelas como no request.",
+      "parametros": {
+        "pesos": {
+          "OsPrazoImportancia": 6
+        },
+        "softMaxMetros": 20000
+      },
+      "atendidas": 487,
+      "foraDaRota": 146,
+      "vencidasAtendidas": 13,
+      "vencidasForaDaRota": 36,
+      "veiculosUsados": 78,
+      "custos": {
+        "penalty": 521322,
+        "fixo": 234,
+        "porKm": 13572,
+        "acimaSoft": 7354,
+        "janela": 17122,
+        "visita": 32935
+      },
+      "custoTotal": 592540,
+      "kmTotal": 1357.2,
+      "rotas": {
+        "km": {
+          "n": 78,
+          "min": 0.3,
+          "p50": 15.9,
+          "p90": 30.8,
+          "max": 34.8
+        },
+        "visitas": {
+          "n": 78,
+          "min": 1,
+          "p50": 6,
+          "p90": 10,
+          "max": 14
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 146,
+        "min": 10,
+        "p50": 2852,
+        "p90": 5688,
+        "max": 8124
+      },
+      "penaltyDasAtendidas": {
+        "n": 487,
+        "min": 15,
+        "p50": 2932,
+        "p90": 4690,
+        "max": 17583
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 257,
+        "planejada_nao_aprovada": 163,
+        "fora_da_rota": 67
+      },
+      "sobreposicaoComGoogle": 420,
+      "horasAteVencerDasAtendidas": {
+        "n": 474,
+        "min": 2,
+        "p50": 18,
+        "p90": 26,
+        "max": 50
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 78,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 1357.2,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 34.8,
+          "limiteKmEquipe": 35,
+          "ok": false
+        },
+        "ok": false
+      }
+    },
+    "revisado": {
+      "descricao": "PotenciaPesos 5 mantido, OsPrazoImportancia 6, soft max 20 km e janela da vencida corrigida.",
+      "parametros": {
+        "pesos": {
+          "OsPrazoImportancia": 6
+        },
+        "softMaxMetros": 20000,
+        "corrigirVencida": true
+      },
+      "atendidas": 494,
+      "foraDaRota": 139,
+      "vencidasAtendidas": 39,
+      "vencidasForaDaRota": 10,
+      "veiculosUsados": 79,
+      "custos": {
+        "penalty": 433623,
+        "fixo": 237,
+        "porKm": 13562,
+        "acimaSoft": 7081,
+        "janela": 311,
+        "visita": 2000
+      },
+      "custoTotal": 456814,
+      "kmTotal": 1356.2,
+      "rotas": {
+        "km": {
+          "n": 79,
+          "min": 0.3,
+          "p50": 16.5,
+          "p90": 30.8,
+          "max": 34.8
+        },
+        "visitas": {
+          "n": 79,
+          "min": 1,
+          "p50": 6,
+          "p90": 10,
+          "max": 14
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 139,
+        "min": 10,
+        "p50": 2817,
+        "p90": 4827,
+        "max": 8124
+      },
+      "penaltyDasAtendidas": {
+        "n": 494,
+        "min": 22,
+        "p50": 3027,
+        "p90": 4814,
+        "max": 17583
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 244,
+        "fora_da_rota": 90,
+        "planejada_nao_aprovada": 160
+      },
+      "sobreposicaoComGoogle": 404,
+      "horasAteVencerDasAtendidas": {
+        "n": 455,
+        "min": 2,
+        "p50": 18,
+        "p90": 26,
+        "max": 50
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 79,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 1356.2,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 34.8,
+          "limiteKmEquipe": 35,
+          "ok": false
+        },
+        "ok": false
+      }
+    },
+    "otimizado": {
+      "descricao": "Melhor combinação encontrada pela busca automática que cumpre R1 e R2.",
+      "parametros": {
+        "PotenciaPesos": 6,
+        "OsPrazoImportancia": 4,
+        "CompensacaoImportancia": 4,
+        "MetrosLimiteRotaPorEquipeSoft": 20000,
+        "CustoKmEquipe": 5,
+        "janelaVencidaCorrigida": true,
+        "horasSoftVencida": 4,
+        "multaVencidaHora": 10
+      },
+      "atendidas": 469,
+      "foraDaRota": 164,
+      "vencidasAtendidas": 38,
+      "vencidasForaDaRota": 11,
+      "veiculosUsados": 74,
+      "custos": {
+        "penalty": 44981,
+        "fixo": 222,
+        "porKm": 4704,
+        "acimaSoft": 1243,
+        "janela": 105,
+        "visita": 0
+      },
+      "custoTotal": 51255,
+      "kmTotal": 940.7,
+      "rotas": {
+        "km": {
+          "n": 74,
+          "min": 0.3,
+          "p50": 11.8,
+          "p90": 21.2,
+          "max": 30.1
+        },
+        "visitas": {
+          "n": 74,
+          "min": 1,
+          "p50": 6,
+          "p90": 10,
+          "max": 14
+        }
+      },
+      "penaltyDasForaDaRota": {
+        "n": 164,
+        "min": 10,
+        "p50": 245,
+        "p90": 409,
+        "max": 683
+      },
+      "penaltyDasAtendidas": {
+        "n": 469,
+        "min": 10,
+        "p50": 259,
+        "p90": 408,
+        "max": 1467
+      },
+      "atendidasPorGrupoReal": {
+        "aprovada": 226,
+        "fora_da_rota": 88,
+        "planejada_nao_aprovada": 155
+      },
+      "sobreposicaoComGoogle": 381,
+      "horasAteVencerDasAtendidas": {
+        "n": 431,
+        "min": 2,
+        "p50": 18,
+        "p90": 26,
+        "max": 50
+      },
+      "regras": {
+        "r1": {
+          "equipesUsadas": 74,
+          "equipesDisponiveis": 88,
+          "ok": true
+        },
+        "r2": {
+          "kmTotal": 940.7,
+          "kmReferencia": 976.9,
+          "maiorKmEquipe": 30.1,
+          "limiteKmEquipe": 35,
+          "ok": true
+        },
+        "ok": true
+      }
+    }
+  },
+  "otimizacao": {
+    "executadaEm": "2026-11-19T19:28:45.905Z",
+    "criterio": "Só entram candidatos que cumprem R1 e R2. Entre eles, maior pontuação = OS atendidas + vencidas em rota (a vencida conta em dobro). Empate: menos km.",
+    "espaco": {
+      "PotenciaPesos": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "OsPrazoImportancia": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "CompensacaoImportancia": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "MetrosLimiteRotaPorEquipeSoft": [
+        1000,
+        3000,
+        5000,
+        10000,
+        15000,
+        20000
+      ],
+      "CustoKmEquipe": [
+        5,
+        10,
+        15,
+        20,
+        30,
+        40,
+        60
+      ],
+      "janelaVencidaCorrigida": [
+        false,
+        true
+      ],
+      "horasSoftVencida": [
+        2,
+        4,
+        6,
+        9
+      ],
+      "multaVencidaHora": [
+        1,
+        10,
+        50,
+        100
+      ]
+    },
+    "semente": 116514751,
+    "avaliacoesNestaRodada": 70,
+    "rodadas": 2,
+    "referencia": {
+      "parametros": {
+        "PotenciaPesos": 5,
+        "OsPrazoImportancia": 1,
+        "CompensacaoImportancia": 6,
+        "MetrosLimiteRotaPorEquipeSoft": 1000,
+        "CustoKmEquipe": 10,
+        "janelaVencidaCorrigida": false,
+        "horasSoftVencida": 4,
+        "multaVencidaHora": 10
+      },
+      "pontuacao": 403,
+      "atendidas": 403,
+      "vencidasAtendidas": 0,
+      "kmTotal": 976.9,
+      "veiculosUsados": 69,
+      "regrasOk": true
+    },
+    "melhor": {
+      "parametros": {
+        "PotenciaPesos": 6,
+        "OsPrazoImportancia": 4,
+        "CompensacaoImportancia": 4,
+        "MetrosLimiteRotaPorEquipeSoft": 20000,
+        "CustoKmEquipe": 5,
+        "janelaVencidaCorrigida": true,
+        "horasSoftVencida": 4,
+        "multaVencidaHora": 10
+      },
+      "pontuacao": 507,
+      "atendidas": 469,
+      "vencidasAtendidas": 38,
+      "kmTotal": 940.7,
+      "veiculosUsados": 74,
+      "regrasOk": true,
+      "justificativas": [
+        {
+          "parametro": "PotenciaPesos",
+          "de": 5,
+          "para": 6,
+          "mecanismo": "Aumenta a escala do penalty inteiro (base 5 para 6). Pular OS fica mais caro em relação ao custo de km, e o solver atende mais.",
+          "efeito": {
+            "os": 9,
+            "vencidas": 2,
+            "km": 133.9000000000001,
+            "semTroca": {
+              "atendidas": 460,
+              "vencidasAtendidas": 36,
+              "kmTotal": 806.8,
+              "regrasOk": true
+            }
+          },
+          "porque": "Comparada com a mesma combinação sem esta troca, ela rende +9 OS, +2 vencidas em rota, +134 km."
+        },
+        {
+          "parametro": "OsPrazoImportancia",
+          "de": 1,
+          "para": 4,
+          "mecanismo": "O fator de prazo (horas vencida ou até vencer) passa de 6^1 para 6^4 no penalty, e as OS mais atrasadas sobem na fila.",
+          "efeito": {
+            "os": 48,
+            "vencidas": 3,
+            "km": 254.60000000000002,
+            "semTroca": {
+              "atendidas": 421,
+              "vencidasAtendidas": 35,
+              "kmTotal": 686.1,
+              "regrasOk": true
+            }
+          },
+          "porque": "Comparada com a mesma combinação sem esta troca, ela rende +48 OS, +3 vencidas em rota, +255 km."
+        },
+        {
+          "parametro": "CompensacaoImportancia",
+          "de": 6,
+          "para": 4,
+          "mecanismo": "A compensação financeira passa de 6^6 para 6^4 no penalty, o que abre espaço para o prazo pesar mais e evita que poucas OS caras dominem a fila.",
+          "efeito": {
+            "os": -20,
+            "vencidas": 1,
+            "km": -380.70000000000005,
+            "semTroca": {
+              "atendidas": 489,
+              "vencidasAtendidas": 37,
+              "kmTotal": 1321.4,
+              "regrasOk": false
+            }
+          },
+          "porque": "É a troca que mantém a combinação dentro de R2. Sem ela, seriam 489 OS, mas com 1.321 km com limite de 977 km. Saldo da troca: −20 OS, +1 vencidas em rota, −381 km."
+        },
+        {
+          "parametro": "MetrosLimiteRotaPorEquipeSoft",
+          "de": 1000,
+          "para": 20000,
+          "mecanismo": "A cobrança extra de 30 por km só começa depois de 20 km de rota, e não mais de 1 km. Rotas de tamanho normal deixam de pagar o adicional.",
+          "efeito": {
+            "os": 56,
+            "vencidas": 2,
+            "km": 408.80000000000007,
+            "semTroca": {
+              "atendidas": 413,
+              "vencidasAtendidas": 36,
+              "kmTotal": 531.9,
+              "regrasOk": true
+            }
+          },
+          "porque": "Comparada com a mesma combinação sem esta troca, ela rende +56 OS, +2 vencidas em rota, +409 km."
+        },
+        {
+          "parametro": "CustoKmEquipe",
+          "de": 10,
+          "para": 5,
+          "mecanismo": "Cada km custa 5 em vez de 10 no objetivo, e o solver aceita desvios curtos para pegar mais OS. Quem segura o km total é a R2, não esse custo.",
+          "efeito": {
+            "os": 7,
+            "vencidas": 1,
+            "km": 130.30000000000007,
+            "semTroca": {
+              "atendidas": 462,
+              "vencidasAtendidas": 37,
+              "kmTotal": 810.4,
+              "regrasOk": true
+            }
+          },
+          "porque": "Comparada com a mesma combinação sem esta troca, ela rende +7 OS, +1 vencidas em rota, +130 km."
+        },
+        {
+          "parametro": "janelaVencidaCorrigida",
+          "de": false,
+          "para": true,
+          "mecanismo": "A OS vencida passa a ter uma única janela no turno inteiro, sem custo fixo igual à compensação. Atender passa a custar menos que pular.",
+          "efeito": {
+            "os": 19,
+            "vencidas": 38,
+            "km": 23.5,
+            "semTroca": {
+              "atendidas": 450,
+              "vencidasAtendidas": 0,
+              "kmTotal": 917.2,
+              "regrasOk": true
+            }
+          },
+          "porque": "Comparada com a mesma combinação sem esta troca, ela rende +19 OS, +38 vencidas em rota, +24 km."
+        }
+      ]
+    },
+    "melhorou": false,
+    "ranking": [
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 507,
+        "atendidas": 469,
+        "vencidasAtendidas": 38,
+        "kmTotal": 940.7,
+        "veiculosUsados": 74,
+        "regrasOk": true
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 6,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 506,
+        "atendidas": 469,
+        "vencidasAtendidas": 37,
+        "kmTotal": 904.3,
+        "veiculosUsados": 74,
+        "regrasOk": true
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 9,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 503,
+        "atendidas": 466,
+        "vencidasAtendidas": 37,
+        "kmTotal": 907.6,
+        "veiculosUsados": 74,
+        "regrasOk": true
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 1
+        },
+        "pontuacao": 502,
+        "atendidas": 465,
+        "vencidasAtendidas": 37,
+        "kmTotal": 906.5,
+        "veiculosUsados": 74,
+        "regrasOk": true
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 50
+        },
+        "pontuacao": 501,
+        "atendidas": 464,
+        "vencidasAtendidas": 37,
+        "kmTotal": 945.4,
+        "veiculosUsados": 75,
+        "regrasOk": true
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 10,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 499,
+        "atendidas": 462,
+        "vencidasAtendidas": 37,
+        "kmTotal": 810.4,
+        "veiculosUsados": 73,
+        "regrasOk": true
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 3,
+          "OsPrazoImportancia": 7,
+          "CompensacaoImportancia": 6,
+          "MetrosLimiteRotaPorEquipeSoft": 15000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 50
+        },
+        "pontuacao": 499,
+        "atendidas": 462,
+        "vencidasAtendidas": 37,
+        "kmTotal": 860.2,
+        "veiculosUsados": 76,
+        "regrasOk": true
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 4,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 2,
+          "multaVencidaHora": 50
+        },
+        "pontuacao": 499,
+        "atendidas": 462,
+        "vencidasAtendidas": 37,
+        "kmTotal": 938.7,
+        "veiculosUsados": 73,
+        "regrasOk": true
+      }
+    ],
+    "melhoresInviaveis": [
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 6,
+          "CompensacaoImportancia": 7,
+          "MetrosLimiteRotaPorEquipeSoft": 1000,
+          "CustoKmEquipe": 15,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 1
+        },
+        "pontuacao": 533,
+        "atendidas": 494,
+        "vencidasAtendidas": 39,
+        "kmTotal": 1444.7,
+        "veiculosUsados": 79,
+        "regrasOk": false,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 79,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 1444.7,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 35,
+            "limiteKmEquipe": 35,
+            "ok": false
+          },
+          "ok": false
+        }
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 7,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 3000,
+          "CustoKmEquipe": 60,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 9,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 531,
+        "atendidas": 492,
+        "vencidasAtendidas": 39,
+        "kmTotal": 1354.1,
+        "veiculosUsados": 81,
+        "regrasOk": false,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 81,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 1354.1,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 34.8,
+            "limiteKmEquipe": 35,
+            "ok": false
+          },
+          "ok": false
+        }
+      },
+      {
+        "parametros": {
+          "PotenciaPesos": 6,
+          "OsPrazoImportancia": 5,
+          "CompensacaoImportancia": 4,
+          "MetrosLimiteRotaPorEquipeSoft": 20000,
+          "CustoKmEquipe": 5,
+          "janelaVencidaCorrigida": true,
+          "horasSoftVencida": 4,
+          "multaVencidaHora": 10
+        },
+        "pontuacao": 528,
+        "atendidas": 489,
+        "vencidasAtendidas": 39,
+        "kmTotal": 1322.8,
+        "veiculosUsados": 77,
+        "regrasOk": false,
+        "regras": {
+          "r1": {
+            "equipesUsadas": 77,
+            "equipesDisponiveis": 88,
+            "ok": true
+          },
+          "r2": {
+            "kmTotal": 1322.8,
+            "kmReferencia": 976.9,
+            "maiorKmEquipe": 34.8,
+            "limiteKmEquipe": 35,
+            "ok": false
+          },
+          "ok": false
+        }
+      }
+    ],
+    "historico": [
+      {
+        "executadaEm": "2026-11-19T19:19:15.326Z",
+        "semente": 115939393,
+        "avaliacoes": 81,
+        "pontuacao": 507,
+        "atendidas": 469,
+        "vencidasAtendidas": 38,
+        "kmTotal": 940.7,
+        "melhorou": true
+      },
+      {
+        "executadaEm": "2026-11-19T19:28:45.905Z",
+        "semente": 116514751,
+        "avaliacoes": 70,
+        "pontuacao": 507,
+        "atendidas": 469,
+        "vencidasAtendidas": 38,
+        "kmTotal": 940.7,
+        "melhorou": false
+      }
+    ]
+  }
+}

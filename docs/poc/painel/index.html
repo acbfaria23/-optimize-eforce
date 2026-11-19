@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POC de priorização adaptativa</title>
+    <link rel="stylesheet" href="painel.css" />
+  </head>
+  <body>
+    <header class="topo">
+      <div>
+        <h1>Parâmetros de priorização: o que mudar e por quê</h1>
+        <p class="sub" id="cenario"></p>
+      </div>
+      <label class="seletor" id="seletorDia">
+        Dia
+        <select id="dia"></select>
+      </label>
+    </header>
+
+    <nav class="abas" role="tablist">
+      <a href="#parametros" role="tab" data-aba="parametros">Parâmetros</a>
+      <a href="#historico" role="tab" data-aba="historico">Histórico de simulações <span class="contador" id="qtdHistorico"></span></a>
+    </nav>
+
+    <main id="conteudo" data-painel="parametros">
+      <p class="aviso">Carregando…</p>
+    </main>
+
+    <main id="historico" data-painel="historico" hidden></main>
+
+    <template id="tpl">
+      <section class="resumo" id="resumo"></section>
+
+      <section class="cartao otimizacao">
+        <div class="otim-topo">
+          <div>
+            <h2>Otimização automática</h2>
+            <p class="nota" id="otimCriterio"></p>
+          </div>
+          <button id="btnOtimizar" type="button">Gerar nova simulação otimizada</button>
+        </div>
+        <div id="otimStatus"></div>
+        <div id="otimResultado"></div>
+      </section>
+
+      <section>
+        <h2>O que cada ajuste faz</h2>
+        <p class="nota">
+          Cada ajuste mostra o efeito aplicado sozinho sobre os parâmetros do dia e o efeito ao entrar na sequência,
+          somado aos anteriores. As marcas R1 e R2 indicam se o cenário respeita as regras de frota da guideline.
+        </p>
+        <div class="ajustes" id="recomendados"></div>
+      </section>
+
+      <section class="cartao">
+        <h3>Efeito acumulado</h3>
+        <p class="nota">Os ajustes entram um por vez, na ordem dos cartões acima.</p>
+        <div class="grade" id="sequencia"></div>
+      </section>
+
+      <section>
+        <h2>Testado e descartado</h2>
+        <div class="ajustes" id="descartados"></div>
+      </section>
+
+      <section class="cartao">
+        <h3>Mantidos</h3>
+        <div class="rolagem"><table id="mantidos"></table></div>
+      </section>
+
+      <details class="cartao">
+        <summary>Diagnóstico do dia: por que o resultado ficou assim</summary>
+        <div class="kpis" id="kpis"></div>
+        <h3>Destino das OS</h3>
+        <div id="grupos"></div>
+        <div class="grade espaco">
+          <div>
+            <h3>Custo da resposta da Google</h3>
+            <div id="custos"></div>
+          </div>
+          <div>
+            <h3>Correlação com o PenaltyCost</h3>
+            <div id="correlacoes"></div>
+          </div>
+        </div>
+        <h3 class="espaco">PenaltyCost por destino</h3>
+        <p class="nota">Escala logarítmica. Linha: mínimo a máximo. Caixa: 25% a 75%. Traço: mediana.</p>
+        <div id="penalties"></div>
+        <h3 class="espaco">Rotas com visita: aprovadas e não aprovadas</h3>
+        <div class="grade" id="rotas"></div>
+      </details>
+
+      <details class="cartao">
+        <summary>Simulação: todos os cenários e calibração</summary>
+        <p class="aviso" id="avisoSimulacao"></p>
+        <div class="selos" id="calibracao"></div>
+        <div class="rolagem"><table id="simTabela"></table></div>
+        <p class="nota" id="linksDocs"></p>
+      </details>
+    </template>
+
+    <script src="dados.js" onerror="this.remove()"></script>
+    <script src="painel.js"></script>
+  </body>
+</html>

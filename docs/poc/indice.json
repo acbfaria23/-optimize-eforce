@@ -1,0 +1,114 @@
+{
+  "dias": [
+    {
+      "data": "2026-11-19",
+      "resultado": "resultado-2026-11-19.json",
+      "simulacao": "simulacao-2026-11-19.json",
+      "relatorio": "2026-11-19-poc-priorizacao.md",
+      "parametrosDoc": "parametros-replay-2026-11-19.md",
+      "dadosBrutos": {
+        "pasta": "../Dados de treinamento",
+        "input": "InputESS_1911.json",
+        "output": "OutputESS_1911.json",
+        "executado": "Executado.json",
+        "pesos": "PesosManuais.txt"
+      },
+      "cenarioBase": "atual",
+      "cenarioRecomendado": "revisado",
+      "sequencia": [
+        { "cenario": "atual", "rotulo": "Parâmetros do dia" },
+        { "cenario": "soft20km", "rotulo": "+ soft max 20 km" },
+        { "cenario": "prazo6_soft20", "rotulo": "+ OsPrazoImportancia 6" },
+        { "cenario": "revisado", "rotulo": "+ janela da vencida" }
+      ],
+      "parametros": [
+        {
+          "chave": "MetrosLimiteRotaPorEquipeSoft",
+          "status": "recomendado",
+          "tipo": "config",
+          "atual": "1.000 m",
+          "sugerido": "20.000 m",
+          "cenarioSozinho": "soft20km",
+          "cenarioAntes": "atual",
+          "cenarioDepois": "soft20km",
+          "porque": "Com o limite suave em 1 km, quase toda rota paga 30 por km acima dele a partir do primeiro quilômetro, além dos 10 por km normais. Cada km custa 40, e OS de penalty baixo deixam de compensar o deslocamento. Com 20 km, a cobrança extra só atinge rotas longas, que é o papel do limite suave.",
+          "evidencia": [
+            "Na resposta da Google, o termo acima do soft max custou 30.062, quase o triplo do custo por km (10.781).",
+            "As rotas aprovadas tiveram mediana de 12,7 km, e três quartos delas passaram de 6,8 km.",
+            "Um quarto das OS fora da rota tinha penalty até 44, o equivalente a pouco mais de 1 km."
+          ]
+        },
+        {
+          "chave": "OsPrazoImportancia",
+          "status": "recomendado",
+          "tipo": "config",
+          "atual": "1",
+          "sugerido": "6",
+          "cenarioSozinho": "prazo6_potencia5",
+          "cenarioAntes": "soft20km",
+          "cenarioDepois": "prazo6_soft20",
+          "porque": "O fator de prazo mede quantas horas a OS está vencida, ou falta para vencer. Com importância 1, ele soma no máximo 5^1 = 5 ao penalty, enquanto a compensação soma até 5^6 = 15.625. Na prática, o prazo não influencia nada. Com 6, ele passa a valer tanto quanto a compensação, e as OS mais atrasadas ganham penalty suficiente para entrar na rota.",
+          "evidencia": [
+            "As 49 vencidas ficaram todas fora da rota.",
+            "O maior penalty entre as OS fora da rota foi 2.839, abaixo do custo de atender uma vencida com as janelas do dia.",
+            "Só com este ajuste, o simulador colocou 12 vencidas em rota."
+          ]
+        },
+        {
+          "chave": "Janela da OS vencida",
+          "status": "recomendado",
+          "tipo": "codigo",
+          "atual": "08:15–08:15, ou turno inteiro com custo fixo = compensação e 500/h",
+          "sugerido": "turno inteiro, soft end +4 h, 10/h, sem custo fixo",
+          "cenarioSozinho": "janela_vencida",
+          "cenarioAntes": "prazo6_soft20",
+          "cenarioDepois": "revisado",
+          "porque": "Para a vencida, o builder oferece duas visitas. A primeira tem janela de 08:15 a 08:15, e nenhuma equipe chega nesse instante. A segunda cobra a compensação inteira como custo fixo, mais cerca de 500 por hora desde 08:15. Assim, atender sempre custa mais que o penalty, e pular é a escolha racional do solver. Corrigir a janela tira essa barreira, sem mexer em peso.",
+          "evidencia": [
+            "Exemplo do dia: custo da segunda visita 2.259,93 contra penalty 2.172. Pular sai mais barato mesmo antes da multa por hora.",
+            "Nenhuma das 458 OS atendidas pela Google usou a segunda visita.",
+            "Só com este ajuste, o simulador colocou 37 vencidas em rota."
+          ]
+        },
+        {
+          "chave": "PotenciaPesos",
+          "status": "descartado",
+          "tipo": "config",
+          "atual": "5",
+          "sugerido": "2 (testado)",
+          "cenarioAntes": "prazo6_soft20",
+          "cenarioDepois": "pesos_sugeridos",
+          "porque": "A ideia era reduzir a distância entre os fatores. Mas a potência também define a escala do penalty inteiro. Com 2, o penalty máximo cai para cerca de 80 e a mediana para cerca de 20, menos que 2 km de deslocamento. O solver passa a pular OS para economizar quilômetro.",
+          "evidencia": [
+            "Com potência 2, os atendimentos simulados caíram de 487 para 243.",
+            "As rotas encolheram para uma mediana de 3,4 km."
+          ]
+        },
+        {
+          "chave": "CustoKmEquipe",
+          "status": "mantido",
+          "tipo": "config",
+          "atual": "10",
+          "sugerido": "10",
+          "porque": "A distância não separou as rotas aprovadas das não aprovadas: 12,7 km contra 11,2 km de mediana, ambas com 6 visitas. Não há evidência para mexer."
+        },
+        {
+          "chave": "CustoFixoEquipe",
+          "status": "mantido",
+          "tipo": "config",
+          "atual": "3",
+          "sugerido": "3",
+          "porque": "Somou 231 no dia. Não foi o motivo das 11 equipes sem visita."
+        },
+        {
+          "chave": "PesoRiscoVida, PesoClienteEssencial",
+          "status": "mantido",
+          "tipo": "config",
+          "atual": "100.000",
+          "sugerido": "100.000",
+          "porque": "Não havia OS desses tipos no lote, então o dia não diz nada sobre eles."
+        }
+      ]
+    }
+  ]
+}

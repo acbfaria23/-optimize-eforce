@@ -15,6 +15,8 @@ Números agregados: [`resultado-2026-11-19.json`](resultado-2026-11-19.json). Pa
 node docs/poc/analise-poc.mjs "docs/Dados de treinamento" docs/poc/resultado-AAAA-MM-DD.json
 ```
 
+Painel visual com o resultado do dia, a simulação e os parâmetros: abra `docs/poc/painel/index.html` no navegador. Para usar o botão de otimização automática, abra pelo servidor local (`node docs/poc/painel/servir.mjs`), porque a busca lê os dados brutos que ficam só na máquina. Para incluir um dia novo, acrescente uma entrada em [`indice.json`](indice.json) e rode `node docs/poc/painel/gerar-dados.mjs`, que atualiza `painel/dados.js`.
+
 "Aprovada" quer dizer que a equipe teve a rota aprovada. Os arquivos não trazem desfecho em campo por OS.
 
 ## Resultado
@@ -81,12 +83,12 @@ Um dia não basta para recalibrar o objetivo. Estes valores servem para rodar de
 | Parâmetro | Hoje | Sugestão | Motivo |
 |---|---:|---:|---|
 | `PesoRiscoVida`, `PesoClienteEssencial` | 100.000 | manter | Não havia OS desses tipos. Com o min-max, o valor absoluto não chega ao penalty. |
-| `PotenciaPesos` | 5 | 2 | Com 5, 5^6 vale 15.625 e o prazo (5^1) some. |
-| `OsPrazoImportancia` | 1 | 6 | O prazo passa a competir com a compensação. |
-| `MetrosLimiteRotaPorEquipeSoft` | 1.000 m | 20.000 m | Toda rota passa de 1 km. O termo custou 30.062 sem distinguir rota curta de longa. A mediana das aprovadas foi 12,7 km. |
+| `PotenciaPesos` | 5 | manter | A primeira versão sugeria 2. A simulação mostrou que, com 2, o penalty fica abaixo do custo de km e os atendimentos caem. Ver [`parametros-replay-2026-11-19.md`](parametros-replay-2026-11-19.md). |
+| `OsPrazoImportancia` | 1 | 6 | Com potência 5, o prazo passa a valer 5^6, o mesmo peso da compensação. |
+| `MetrosLimiteRotaPorEquipeSoft` | 1.000 m | 20.000 m | Quase toda rota passa de 1 km; três quartos das aprovadas passaram de 6,8 km. O termo custou 30.062 sem distinguir rota curta de longa. A mediana das aprovadas foi 12,7 km. |
 | `CustoKmEquipe` | 10 | 10 | Km não separou aprovadas de não aprovadas. Sem evidência para mexer. |
 | `CustoFixoEquipe` | 3 | 3 | Onze equipes ficaram sem visita. O fixo pesou 231 no total. |
-| Janela da OS vencida | soft end 08:15, multa = compensação/hora | turno inteiro, soft end 12:15, multa 10/hora | A multa horária volta a ser `MultaAtrasoReguladaHora`. Sem essa mudança, ajustar peso não coloca as 49 em rota. |
+| Janela da OS vencida | soft end 08:15, multa = compensação/hora | turno inteiro, soft end 12:15, multa 10/hora | A multa horária volta a ser `MultaAtrasoReguladaHora`. Na simulação, só o peso do prazo colocou 12 vencidas em rota; com a janela corrigida, foram 39. |
 
 ## O que este dia não permite concluir
 

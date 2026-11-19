@@ -69,6 +69,8 @@ Os itens abaixo são invariantes de arquitetura:
 13. **Configuração é código versionado.** Constraints, coeficientes e schemas passam por revisão.
 14. **Uma mudança causal por experimento.** Evitar alterar modelo, objective e regras ao mesmo tempo.
 15. **Privacidade por padrão.** IDs pseudonimizados, dados mínimos e acesso controlado.
+16. **Limite de equipes disponíveis.** Nenhum plano pode usar mais equipes do que as disponíveis no snapshot, nem atribuir OS a equipe indisponível ou fora do turno. Ver 6.4.
+17. **Sem aumento de km percorrido.** Uma mudança de parâmetro, objective ou modelo não pode fazer o plano ultrapassar os km percorridos pela política de referência no mesmo lote, e nenhuma equipe pode passar do seu limite de distância. Ver 6.4.
 
 ## 4. Arquitetura de referência e limites de módulos
 
@@ -464,6 +466,40 @@ Não converter peso muito alto automaticamente em hard constraint. Criar registr
 
 Até a decisão, manter comportamento atual no baseline e impedir ativação autônoma no segmento ambíguo.
 
+### 6.4 Regras de frota obrigatórias
+
+Estas duas regras valem para todo plano e toda proposta de parâmetro, em qualquer modo (`SHADOW`, `ASSIST`, `ACTIVE`). Não podem ser trocadas por ganho de atendimento.
+
+#### R1 — Limite de equipes disponíveis
+
+- O plano usa no máximo as equipes disponíveis no snapshot: `equipes_usadas <= equipes_disponiveis`.
+- Equipe disponível é a que está no snapshot com `availability = AVAILABLE` e turno ativo no horizonte. No request da Google, corresponde aos `vehicles` enviados.
+- Nenhuma OS pode ser atribuída a equipe indisponível, fora do turno ou fora de `allowedVehicleIndices`.
+- O otimizador não cria equipe, não duplica equipe e não estende turno para acomodar OS.
+- Escopo: `evaluate_team` e `validate_plan`. Reason code: `TEAM_LIMIT_EXCEEDED` ou `TEAM_NOT_AVAILABLE`.
+
+#### R2 — Km percorrido não pode ser ultrapassado
+
+- **Por equipe (hard):** a distância da rota não passa do limite da equipe (`routeDistanceLimit.maxMeters`, hoje `MetrosLimiteRotaPorEquipe`). Reason code: `TEAM_DISTANCE_LIMIT_EXCEEDED`.
+- **Por lote (gate):** o km total do plano proposto não pode ultrapassar o km total da política de referência no mesmo lote: `km_total_proposto <= km_total_referencia`.
+  - A referência é a política ativa (`manual_v1`) reexecutada no mesmo snapshot, com a mesma fonte de distância.
+  - Em simulação local, comparar simulado com simulado, nunca simulado com o km real da Google.
+  - Tolerância numérica, se houver, deve ser declarada no experimento, e o padrão é zero.
+- Proposta que atenda mais OS e ultrapasse o km de referência é reprovada. Para ganhar atendimento, é preciso redistribuir o mesmo orçamento de km, não aumentá-lo.
+- Escopo: `validate_plan`, replay e promoção de configuração. Reason code: `KM_BUDGET_EXCEEDED`.
+
+#### Como reportar
+
+Todo replay, simulação ou relatório de proposta deve mostrar, lado a lado com a referência:
+
+| Métrica | Referência | Proposta | Regra |
+|---|---|---|---|
+| Equipes usadas / disponíveis | x / N | y / N | R1: `y <= N` |
+| Km total | K | K' | R2: `K' <= K` |
+| Maior km por equipe / limite | m / L | m' / L | R2: `m' <= L` |
+
+Proposta que viola R1 ou R2 não segue para shadow, assist ou ativação, mesmo com melhora nas demais métricas.
+
 ## 7. Telemetria, eventos e dataset
 
 ### 7.1 Eventos obrigatórios
@@ -828,6 +864,8 @@ Bloquear merge/deploy quando:
 - replay diverge sem aprovação;
 - baseline degrada além da tolerância;
 - qualquer violação hard aparece;
+- o replay usa mais equipes do que as disponíveis (R1);
+- o replay ultrapassa o km total da referência ou o limite de km de alguma equipe (R2);
 - latência excede orçamento;
 - artefatos não possuem versão/hash;
 - model card ou manifesto está ausente;
@@ -1026,6 +1064,8 @@ Replay é considerado reproduzível quando produz o mesmo conjunto factível, co
 - [ ] Novas regras têm ID, versão, reason code, fonte e vigência?
 - [ ] Fail-open/fail-closed está explícito?
 - [ ] Plano é validado antes e depois do optimizer?
+- [ ] Equipes usadas ficam dentro das disponíveis (R1)?
+- [ ] Km total fica dentro do km da referência no mesmo lote, e cada equipe dentro do seu limite (R2)?
 - [ ] Fallback, kill switch e rollback foram testados?
 
 ### Dados e contratos
