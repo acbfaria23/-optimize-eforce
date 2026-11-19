@@ -1,0 +1,271 @@
+﻿using Microsoft.Extensions.Logging;
+using Moq;
+using Energisa.Eforce.Otimizador.Models.Eforce;
+using Energisa.Eforce.Otimizador.Models.Gmpro;
+using Energisa.Eforce.Otimizador.Services;
+using Energisa.Eforce.Otimizador.Tests.Helpers;
+
+namespace Energisa.Eforce.Otimizador.Tests.Services;
+
+public class VehicleMappingServiceTests
+{
+    private readonly VehicleMappingService _service;
+
+    public VehicleMappingServiceTests()
+    {
+        var logger = new Mock<ILogger<VehicleMappingService>>();
+        _service = new VehicleMappingService(logger.Object);
+    }
+
+    // ?? MapearVehicles � B�sico ?????????????????????????????????????????????
+
+    [Fact]
+    public void MapearVehicles_EquipeComRegiao_RetornaVehicle()
+    {
+        var equipes = new List<Equipe> { TestDataFactory.CriarEquipeValida() };
+        var regioes = new List<Regiao> { TestDataFactory.CriarRegiao() };
+
+        var (vehicles, equipesProcessadas) = _service.MapearVehicles(equipes, regioes, TestDataFactory.DataExecucao);
+
+        Assert.Single(vehicles);
+        Assert.Single(equipesProcessadas);
+    }
+
+    [Fact]
+    public void MapearVehicles_EquipeSemRegiao_Ignorada()
+    {
+        var equipes = new List<Equipe> { TestDataFactory.CriarEquipeValida() };
+        var regioes = new List<Regiao>();
+
+        var (vehicles, equipesProcessadas) = _service.MapearVehicles(equipes, regioes, TestDataFactory.DataExecucao);
+
+        Assert.Empty(vehicles);
+        Assert.Empty(equipesProcessadas);
+    }
+
+    [Fact]
+    public void MapearVehicles_EquipeComMultiplasRegioes_GeraMultiplosVehicles()
+    {
+        var equipes = new List<Equipe> { TestDataFactory.CriarEquipeValida() };
+        var regioes = new List<Regiao>
+        {
+            TestDataFactory.CriarRegiao("CGRGA34", "LV", 1),
+            TestDataFactory.CriarRegiao("CGRGA34", "LV", 2)
+        };
+
+        var (vehicles, equipesProcessadas) = _service.MapearVehicles(equipes, regioes, TestDataFactory.DataExecucao);
+
+        Assert.Equal(2, vehicles.Count);
+        Assert.Equal(2, equipesProcessadas.Count);
+    }
+
+    [Fact]
+    public void MapearVehicles_ListaVazia_RetornaVazio()
+    {
+        var (vehicles, equipesProcessadas) = _service.MapearVehicles([], [], TestDataFactory.DataExecucao);
+
+        Assert.Empty(vehicles);
+        Assert.Empty(equipesProcessadas);
+    }
+
+    // ?? Ajuste de turno (�5.1) ??????????????????????????????????????????????
+
+    [Fact]
+    public void MapearVehicles_CargaTrabalho80_FimTurnoReduzido()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        equipe.PorcentagemCargaTrabalho = 80;
+        equipe.InicioTurno = new DateTime(2025, 1, 1, 8, 0, 0, DateTimeKind.Utc);
+        equipe.FimTurno = new DateTime(2025, 1, 1, 17, 0, 0, DateTimeKind.Utc);
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (_, equipesProcessadas) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        // 9 horas * 80% = 7.2 horas ? 08:00 + 7.2h = 15:12
+        var esperado = new DateTime(2025, 1, 15, 8, 0, 0, DateTimeKind.Utc).AddHours(9 * 0.80);
+        Assert.Equal(esperado, equipesProcessadas[0].FimTurnoAjustado);
+    }
+
+    [Fact]
+    public void MapearVehicles_CargaTrabalho100_FimTurnoIgual()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        equipe.PorcentagemCargaTrabalho = 100;
+        equipe.InicioTurno = new DateTime(2025, 1, 1, 8, 0, 0, DateTimeKind.Utc);
+        equipe.FimTurno = new DateTime(2025, 1, 1, 17, 0, 0, DateTimeKind.Utc);
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (_, equipesProcessadas) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        var esperado = new DateTime(2025, 1, 15, 17, 0, 0, DateTimeKind.Utc);
+        Assert.Equal(esperado, equipesProcessadas[0].FimTurnoAjustado);
+    }
+
+    // ?? Ajuste de data para dia corrente (�5.2) ????????????????????????????
+
+    [Fact]
+    public void MapearVehicles_InicioTurno_AjustadoParaDiaExecucao()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        equipe.InicioTurno = new DateTime(2020, 6, 1, 8, 0, 0, DateTimeKind.Utc);
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (_, equipesProcessadas) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Equal(2025, equipesProcessadas[0].InicioTurnoAjustado.Year);
+        Assert.Equal(1, equipesProcessadas[0].InicioTurnoAjustado.Month);
+        Assert.Equal(15, equipesProcessadas[0].InicioTurnoAjustado.Day);
+        Assert.Equal(8, equipesProcessadas[0].InicioTurnoAjustado.Hour);
+    }
+
+    [Fact]
+    public void MapearVehicles_TurnoNoturno_FimTurnoMaisDia()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        equipe.InicioTurno = new DateTime(2025, 1, 1, 22, 0, 0, DateTimeKind.Utc);
+        equipe.FimTurno = new DateTime(2025, 1, 1, 6, 0, 0, DateTimeKind.Utc);
+        equipe.PorcentagemCargaTrabalho = 100;
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (_, equipesProcessadas) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.True(equipesProcessadas[0].FimTurnoAjustado > equipesProcessadas[0].InicioTurnoAjustado);
+    }
+
+    // ?? Vehicle mapeado ?????????????????????????????????????????????????????
+
+    [Fact]
+    public void MapearVehicles_Vehicle_TravelModeDriving()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Equal("DRIVING", vehicles[0].TravelMode);
+    }
+
+    [Fact]
+    public void MapearVehicles_Vehicle_StartWaypointCorreto()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Equal(equipe.LatitudeGaragem, vehicles[0].StartWaypoint.Location.LatLng.Latitude);
+        Assert.Equal(equipe.LongitudeGaragem, vehicles[0].StartWaypoint.Location.LatLng.Longitude);
+    }
+
+    [Fact]
+    public void MapearVehicles_Vehicle_CostPerKilometerCorreto()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        equipe.CustoKm = 2.5;
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Equal(2.5, vehicles[0].CostPerKilometer);
+    }
+
+    [Fact]
+    public void MapearVehicles_Vehicle_FixedCostCorreto()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Equal(ConversaoConstantes.CustoFixoVeiculo, vehicles[0].FixedCost);
+    }
+
+    [Fact]
+    public void MapearVehicles_Vehicle_LoadLimitsPresente()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        equipe.MaxLoad = 25;
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.True(vehicles[0].LoadLimits.ContainsKey("NUMERO_VISISTAS"));
+        Assert.Equal(25, vehicles[0].LoadLimits["NUMERO_VISISTAS"].MaxLoad);
+    }
+
+    // ?? Label ???????????????????????????????????????????????????????????????
+
+    [Fact]
+    public void MapearVehicles_Label_ContemCodigoEquipe()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida("CGRGA34");
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Contains("CGRGA34", vehicles[0].Label);
+    }
+
+    [Fact]
+    public void MapearVehicles_Label_ContemPerfilEquipe()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        equipe.PerfilEquipe = "Faz tudo";
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Contains("PERFIL_EQUIPE: Faz tudo", vehicles[0].Label);
+    }
+
+    [Fact]
+    public void MapearVehicles_Label_ContemCodRegiao()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        var regiao = TestDataFactory.CriarRegiao("CGRGA34", "LV", 5);
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Contains("COD_REGIAO: 5", vehicles[0].Label);
+    }
+
+    // ?? TimeWindows ?????????????????????????????????????????????????????????
+
+    [Fact]
+    public void MapearVehicles_StartTimeWindows_Presente()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Single(vehicles[0].StartTimeWindows);
+    }
+
+    [Fact]
+    public void MapearVehicles_EndTimeWindows_Presente()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (vehicles, _) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.Single(vehicles[0].EndTimeWindows);
+    }
+
+    // ?? Refei��o noturna ????????????????????????????????????????????????????
+
+    [Fact]
+    public void MapearVehicles_RefeicaoNoturna_FimRefeicaoMaisDia()
+    {
+        var equipe = TestDataFactory.CriarEquipeValida();
+        equipe.InicioRefeicao = new DateTime(2025, 1, 1, 23, 0, 0, DateTimeKind.Utc);
+        equipe.FimRefeicao = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var regiao = TestDataFactory.CriarRegiao();
+
+        var (_, equipesProcessadas) = _service.MapearVehicles([equipe], [regiao], TestDataFactory.DataExecucao);
+
+        Assert.True(equipesProcessadas[0].FimRefeicaoAjustado > equipesProcessadas[0].InicioRefeicaoAjustado);
+    }
+}
+

@@ -1,0 +1,135 @@
+﻿trigger:
+  branches:
+    include:
+      - develop
+      - master
+      - release/*
+      - feature/*
+  paths:
+    include:
+      - Energisa.Eforce.Otimizador/**
+      - Energisa.Eforce.Otimizador.Api/**
+      - .devops/otimizador-api/**
+
+resources:
+  repositories:
+    - repository: TemplatePipeline
+      type: git
+      name: DevOps/TemplatePipeline
+
+variables:
+  - name: namespaceBase
+    value: "sigod"
+  - template: vars/defaults.yml@TemplatePipeline
+  - template: ../env.${{ variables.environment }}.yml
+  - group: Kafka-${{ variables.environment }}
+  - group: ContextAlocacao-${{ variables.environment }}
+  - group: ContextModelo-${{ variables.environment }}
+  - group: Autorizacao-${{ variables.environment }}
+  - group: ContextOrdemServico-${{ variables.environment }}
+  - group: Sigod-${{ variables.environment }}
+  - group: ContextIdentity-${{ variables.environment }}
+  - group: Otimizador-${{ variables.environment }}
+
+stages:
+  - template: net/build-template-container-stages-sq.yml@TemplatePipeline
+    parameters:
+      dockerImageName: ${{ lower(variables['Build.DefinitionName']) }}
+      namespaceBase: ${{ lower(variables['namespaceBase']) }}
+      ProjectToBuild: 'Energisa.Eforce.Otimizador.Api/Energisa.Eforce.Otimizador.Api.csproj'
+      #testDllPattern: "**/Energisa.God.ApiGodAlocacao.Test.dll"
+      targetResolveRepo: ${{ variables['targetResolveRepo'] }}
+      DockerfilePath: 'Energisa.Eforce.Otimizador.Api/Dockerfile'
+
+  - template: ocp/stage-helm-deploy.yml@TemplatePipeline
+    parameters:
+      namespaceBase: ${{ lower(variables['namespaceBase']) }}
+      appNameBase: ${{ lower(variables['Build.DefinitionName']) }}
+      helmChartProject: DevOps
+      helmChartRepo: HelmCharts
+      helmChartDirectory: ms-default
+      helmOverrideValues:
+        - resources.requests.cpu=${{ variables.cpuRequest }}
+        - resources.requests.memory=${{ variables.memoryRequest }}
+
+        - resources.limits.cpu=${{ variables.cpuLimit }}
+        - resources.limits.memory=${{ variables.memoryLimit }}
+
+        - container.livenessProbe.enabled=false
+        - container.readinessProbe.enabled=false
+
+        - autoscaling.enabled=true
+        - replicaCount=${{ variables.replicas }}
+        - autoscaling.minReplicas=${{ variables.minReplicas }}
+        - autoscaling.maxReplicas=${{ variables.maxReplicas }}
+        
+        - env.DOTNET_ENVIRONMENT=${{ variables.env }}
+                
+        #Configurações de Contexto OrdemServiço
+        - env.OrdemServicoContext__BasePath=$(OrdemServico_BasePath)
+
+        #COnfiguração de acesso TNS_NAMES
+        - volumes[0].name=tns-volume
+        - volumes[0].configMap=tns-volume
+        - volumeMounts[0].name=tns-volume
+        - volumeMounts[0].path=/App/Oracle
+        - env.TNS_ADMIN=/App/Oracle
+                
+        #Configuração de acesso Kafka
+        - env.KafkaSettings__BrokerPort=$(defaultPort)
+        - env.KafkaSettings__BrokerVHost=sigod
+        - env.KafkaSettings__BrokerHost=$(defaultHost)
+        - env.KafkaSettings__BrokerUser=MsGodOtimizador
+        - env.KafkaSettings__BrokerUserPassword=$(MsGodOtimizador)
+        - env.KafkaSettings__SchemaRegistryUrl=$(SchemaRegistryUrl)
+        - env.KafkaSettings__SchemaRegistryBasicAuthUserInfo=$(SchemaRegistryBasicAuthUserInfo)     
+                       
+        #Configurações de Contexto Modelo
+        - env.ModeloContext__Mongo__Database=$(Modelo_Mongo_Database)
+        - env.ModeloContext__Mongo__ApplicationUser=$(Modelo_Mongo_ApplicationUser)
+        - env.ModeloContext__Mongo__ApplicationPassword=$(Modelo_Mongo_ApplicationPassword)
+        - env.ModeloContext__Mongo__Hosts=$(Modelo_Mongo_Hosts)    
+
+        - env.OrdemServicoContext__Mongo__Database=$(OrdemServico_Mongo_Database)
+        - env.OrdemServicoContext__Mongo__ApplicationUser=$(OrdemServico_Mongo_ApplicationUser)
+        - env.OrdemServicoContext__Mongo__ApplicationPassword=$(OrdemServico_Mongo_ApplicationPassword)
+        - env.OrdemServicoContext__Mongo__Hosts=$(OrdemServico_Mongo_Hosts)
+        
+        #Configurações de Contexto Alocacao
+        - env.AlocacaoContext__Mongo__Database=$(Alocacao_Mongo_Database)
+        - env.AlocacaoContext__Mongo__ApplicationUser=$(Alocacao_Mongo_ApplicationUser)
+        - env.AlocacaoContext__Mongo__ApplicationPassword=$(Alocacao_Mongo_ApplicationPassword)
+        - env.AlocacaoContext__Mongo__Hosts=$(Alocacao_Mongo_Hosts)
+
+        #Configurações DataDog
+        - datadog.enabled=true
+        - datadog.env=${{ variables.environment }}
+        - datadog.dotnetLib.enabled=true
+        - datadog.service=${{ lower(variables['Build.DefinitionName']) }}
+
+        #Configurações Otimizador
+        - env.GoogleCloudStorage__ServiceAccountCredential__type=$(type)
+        - env.GoogleCloudStorage__ServiceAccountCredential__project_id=$(project_id)
+        - env.GoogleCloudStorage__ServiceAccountCredential__private_key_id=$(private_key_id)
+        - env.GoogleCloudStorage__ServiceAccountCredential__private_key=$(private_key)
+        - env.GoogleCloudStorage__ServiceAccountCredential__client_email=$(client_email)
+        - env.GoogleCloudStorage__ServiceAccountCredential__client_id=$(client_id)
+        - env.GoogleCloudStorage__ServiceAccountCredential__auth_uri=$(auth_uri)
+        - env.GoogleCloudStorage__ServiceAccountCredential__token_uri=$(token_uri)
+        - env.GoogleCloudStorage__ServiceAccountCredential__auth_provider_x509_cert_url=$(auth_provider_x509_cert_url)
+        - env.GoogleCloudStorage__ServiceAccountCredential__client_x509_cert_url=$(client_x509_cert_url)
+        - env.GoogleCloudStorage__BucketName=$(bucket_name)
+        - env.Otimizacao__ProjectId=$(project_id)   
+
+        - secretEnv.Signing__Key=$(Key)
+        - env.Signing__Issuer=$(Issuer)
+        - env.Signing__Audience=Sigod
+        
+        - env.Identity__BasePath=$(Identity_BasePath)
+        - env.SystemAuthentication__User=$(SystemUser)
+        - env.SystemAuthentication__Key=$(SystemKey)
+        
+        - env.Versao=$(VERSAO)
+
+        #Configurações EforceGeoAmbiente API
+        - env.EforceGeoAmbiente__ApiBaseUrl=$(EforceGeoAmbiente_ApiBaseUrl)

@@ -1,0 +1,129 @@
+﻿trigger:
+  branches:
+    include:
+      - develop
+      - master
+      - release/*
+      - feature/*
+  paths:
+    include:
+      - Energisa.Eforce.Otimizador/**
+      - Energisa.Eforce.Otimizador.Cronjob/**
+      - .devops/otimizador-cronjob/**
+
+resources:
+  repositories:
+    - repository: TemplatePipeline
+      type: git
+      name: DevOps/TemplatePipeline
+
+variables:
+  - name: namespaceBase
+    value: "sigod"
+  - template: vars/defaults.yml@TemplatePipeline
+  - template: ../env.${{ variables.environment }}.yml
+  - group: Kafka-${{ variables.environment }}
+  - group: ContextAlocacao-${{ variables.environment }}
+  - group: ContextModelo-${{ variables.environment }}
+  - group: Autorizacao-${{ variables.environment }}
+  - group: ContextOrdemServico-${{ variables.environment }}
+  - group: Sigod-${{ variables.environment }}
+  - group: ContextIdentity-${{ variables.environment }}
+  - group: Otimizador-${{ variables.environment }}
+
+  - name: dllFile
+    value: "Energisa.Eforce.Otimizador.Cronjob.dll"
+  - name: schedule
+    value: "*/30 * * * *"
+
+stages:
+  - template: net/build-template-container-stages-sq.yml@TemplatePipeline
+    parameters:
+      dockerImageName: ${{ replace(lower(variables['Build.DefinitionName']), '.', '-') }}
+      namespaceBase: ${{ lower(variables['namespaceBase']) }}
+      ProjectToBuild: 'Energisa.Eforce.Otimizador.Cronjob/Energisa.Eforce.Otimizador.Cronjob.csproj'
+      targetResolveRepo: ${{ variables['targetResolveRepo'] }}
+      DockerfilePath: 'Energisa.Eforce.Otimizador.Cronjob/Dockerfile'
+
+  - template: ocp/deploy-template-cronjob-ocp.yml@TemplatePipeline
+    parameters:
+      dryRun: false
+      schedule: ${{ variables['schedule'] }}
+      namespace: ${{ lower(variables['namespaceBase']) }}
+      appName: ${{ replace(lower(variables['Build.DefinitionName']), '.', '-') }}
+      dllFile: ${{ variables['dllFile'] }}
+      helmOverrideValues:
+        # Cronjob settings
+        - cronjob.concurrencyPolicy=Forbid
+        - cronjob.schedule=${{ variables['schedule'] }}
+        # Evita travamento por sobrecarga do CRI-O/node (RCA incidente 04/09/2026)
+        - cronjob.activeDeadlineSeconds=1800
+        - cronjob.startingDeadlineSeconds=600
+
+        # Healthchecks
+        - container.livenessProbe.enabled=false
+        - container.readinessProbe.enabled=false
+
+        # Container command
+        - container.command={dotnet,${{ variables['dllFile'] }}}
+
+        # Container Resources
+        - resources.requests.cpu=${{ variables.cpuRequest }}
+        - resources.requests.memory=${{ variables.memoryRequest }}
+            
+        - resources.limits.cpu=${{ variables.cpuLimit }}
+        - resources.limits.memory=${{ variables.memoryLimit }}
+
+        # Environment variables
+        - env.DOTNET_ENVIRONMENT=${{ variables.env }}
+
+        # Configurações de Contexto ModeloEquipe
+        - env.ModeloContext__Mongo__Database=$(Modelo_Mongo_Database)
+        - env.ModeloContext__Mongo__ApplicationUser=$(Modelo_Mongo_ApplicationUser)
+        - env.ModeloContext__Mongo__ApplicationPassword=$(Modelo_Mongo_ApplicationPassword)
+        - env.ModeloContext__Mongo__Hosts=$(Modelo_Mongo_Hosts)
+        
+        - env.OrdemServicoContext__Mongo__Database=$(OrdemServico_Mongo_Database)
+        - env.OrdemServicoContext__Mongo__ApplicationUser=$(OrdemServico_Mongo_ApplicationUser)
+        - env.OrdemServicoContext__Mongo__ApplicationPassword=$(OrdemServico_Mongo_ApplicationPassword)
+        - env.OrdemServicoContext__Mongo__Hosts=$(OrdemServico_Mongo_Hosts)
+
+         #Configurações de Contexto Alocacao
+        - env.AlocacaoContext__Mongo__Database=$(Alocacao_Mongo_Database)
+        - env.AlocacaoContext__Mongo__ApplicationUser=$(Alocacao_Mongo_ApplicationUser)
+        - env.AlocacaoContext__Mongo__ApplicationPassword=$(Alocacao_Mongo_ApplicationPassword)
+        - env.AlocacaoContext__Mongo__Hosts=$(Alocacao_Mongo_Hosts)
+        
+        # Configuração de acesso Kafka
+        - env.KafkaSettings__BrokerPort=$(defaultPort)
+        - env.KafkaSettings__BrokerVHost=sigod
+        - env.KafkaSettings__BrokerHost=$(defaultHost)
+        - env.KafkaSettings__BrokerUser=MsGodIndenizacao
+        - secretEnv.KafkaSettings__BrokerUserPassword=$(MsGodIndenizacao)
+        - env.KafkaSettings__SchemaRegistryUrl=$(SchemaRegistryUrl)
+        - secretEnv.KafkaSettings__SchemaRegistryBasicAuthUserInfo=$(SchemaRegistryBasicAuthUserInfo)        
+
+        # Oracle TNS Volume Mapping
+        - volumes[0].name=tns-volume
+        - volumes[0].configMap=tns-volume
+        - volumeMounts[0].name=tns-volume
+        - volumeMounts[0].path=/App/Oracle
+        - env.TNS_ADMIN=/App/Oracle
+        - env.Versao=$(VERSAO)
+
+        # Configurações Otimizador
+        - env.GoogleCloudStorage__ServiceAccountCredential__type=$(type)
+        - env.GoogleCloudStorage__ServiceAccountCredential__project_id=$(project_id)
+        - env.GoogleCloudStorage__ServiceAccountCredential__private_key_id=$(private_key_id)
+        - env.GoogleCloudStorage__ServiceAccountCredential__private_key=$(private_key)
+        - env.GoogleCloudStorage__ServiceAccountCredential__client_email=$(client_email)
+        - env.GoogleCloudStorage__ServiceAccountCredential__client_id=$(client_id)
+        - env.GoogleCloudStorage__ServiceAccountCredential__auth_uri=$(auth_uri)
+        - env.GoogleCloudStorage__ServiceAccountCredential__token_uri=$(token_uri)
+        - env.GoogleCloudStorage__ServiceAccountCredential__auth_provider_x509_cert_url=$(auth_provider_x509_cert_url)
+        - env.GoogleCloudStorage__ServiceAccountCredential__client_x509_cert_url=$(client_x509_cert_url)
+        - env.GoogleCloudStorage__BucketName=$(bucket_name)
+        - env.Otimizacao__ProjectId=$(project_id)
+
+        #Configurações EforceGeoAmbiente API
+        - env.EforceGeoAmbiente__ApiBaseUrl=$(EforceGeoAmbiente_ApiBaseUrl)

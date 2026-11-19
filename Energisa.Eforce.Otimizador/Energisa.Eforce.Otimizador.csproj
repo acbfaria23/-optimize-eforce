@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Energisa.Eforce.Otimizador.Tests\**" />
+		<Content Remove="Energisa.Eforce.Otimizador.Tests\**" />
+		<EmbeddedResource Remove="Energisa.Eforce.Otimizador.Tests\**" />
+		<None Remove="Energisa.Eforce.Otimizador.Tests\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Google.Api.Gax.Grpc" Version="4.12.1" />
+		<PackageReference Include="Google.Cloud.Storage.V1" Version="4.14.0" />
+		<PackageReference Include="Google.Maps.RouteOptimization.V1" Version="1.4.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.33.5" />
+		<PackageReference Include="Energisa.God.InfraData.Http" Version="10.3.2.*" />
+		<PackageReference Include="Energisa.God.Data" Version="10.3.2.*" />
+		<PackageReference Include="Energisa.God.Domain" Version="10.3.2.*" />
+		<PackageReference Include="Energisa.God.InfraData.NoSql" Version="10.3.2.*" />
+		<PackageReference Include="Energisa.God.InfraData.Sql" Version="10.3.2.*" />
+		<PackageReference Include="Energisa.God.InfraData.Observabilidade" Version="10.3.2.*" />
+		<PackageReference Include="xunit.assert" Version="2.9.2" />
+		<PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
+		<PackageReference Include="Energisa.Message.Kafka" Version="4.3.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<RuntimeHostConfigurationOption Include="Modulo" Value="SIGOD" />
+		<RuntimeHostConfigurationOption Include="Secret" Value="Secret" />
+		<RuntimeHostConfigurationOption Include="Versao" Value="'119999999'" />
+		<RuntimeHostConfigurationOption Include="Empresa" Value="7" />
+		<RuntimeHostConfigurationOption Include="TenantTag" Value="empresa" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="appsettings.Development.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+
+		<Content Update="appsettings.Staging.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="scenario.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Sql\*.sql">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+
+</Project>

@@ -1,0 +1,25 @@
+{
+  "profiles": {
+    "Energisa.God.ApiGodAlocacao.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger/index.html",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging",
+        "DOTNET_ENVIRONMENT": "Staging"
+      },
+      "applicationUrl": "https://localhost:53149;http://localhost:53150"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_HTTP_PORTS": "8080"
+      },
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  }
+}
